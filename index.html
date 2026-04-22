@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球 AI 中心 · 新闻 + 工具导航</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--cyan:#00ffff;--pink:#ff00ff;--purple:#8b00ff;--bg:#0a0a0f;--card:rgba(20,20,35,0.85)}
+body{background:var(--bg);color:#e0e0e0;font-family:'Microsoft YaHei','PingFang SC',sans-serif;min-height:100vh}
+
+/* === Header === */
+.header{background:linear-gradient(135deg,#0d0d1a 0%,#1a0a2e 50%,#0d0d1a 100%);padding:24px 20px;text-align:center;border-bottom:1px solid rgba(0,255,255,0.15)}
+.header h1{font-size:clamp(1.5rem,5vw,2.2rem);background:linear-gradient(90deg,#00ffff,#ff00ff,#8b00ff,#00ffff);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:grad 4s ease infinite}
+.header .sub{color:rgba(0,255,255,0.45);font-size:0.78rem;margin-top:5px;letter-spacing:0.15em}
+@keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.update-time{color:rgba(255,255,255,0.2);font-size:0.68rem;margin-top:3px}
+
+/* === Top Tabs (News / Tools) === */
+.toptabs{display:flex;justify-content:center;gap:8px;padding:12px 10px;flex-wrap:wrap;background:rgba(10,10,20,0.97);position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(0,255,255,0.1)}
+.toptab{padding:8px 22px;border-radius:20px;border:1px solid rgba(0,255,255,0.25);background:transparent;color:rgba(0,255,255,0.6);cursor:pointer;font-size:0.88rem;font-weight:bold;transition:all 0.3s}
+.toptab:hover,.toptab.active{background:rgba(0,255,255,0.12);color:#00ffff;border-color:#00ffff;box-shadow:0 0 14px rgba(0,255,255,0.18)}
+
+/* === News Sub-tabs === */
+.newstabs{display:flex;justify-content:center;gap:5px;padding:10px 10px;flex-wrap:wrap;background:rgba(10,10,20,0.92);border-bottom:1px solid rgba(0,255,255,0.06)}
+.newstab{padding:5px 13px;border-radius:16px;border:1px solid rgba(0,255,255,0.15);background:transparent;color:rgba(0,255,255,0.45);cursor:pointer;font-size:0.75rem;transition:all 0.3s}
+.newstab:hover,.newstab.active{background:rgba(0,255,255,0.1);color:#00ffff;border-color:rgba(0,255,255,0.5)}
+
+/* === Container === */
+.container{max-width:960px;margin:0 auto;padding:12px}
+.panel{display:none}.panel.active{display:block}
+
+/* === News Cards === */
+.section{display:none}.section.active{display:block}
+.section-title{font-size:0.95rem;color:var(--cyan);margin:16px 0 10px;padding-left:10px;border-left:3px solid var(--cyan);display:flex;align-items:center;gap:6px}
+.card{background:var(--card);border:1px solid rgba(0,255,255,0.06);border-radius:10px;padding:13px;margin-bottom:9px;transition:all 0.3s;cursor:pointer;text-decoration:none;display:block}
+.card:hover{border-color:rgba(0,255,255,0.3);transform:translateY(-2px);box-shadow:0 4px 18px rgba(0,255,255,0.08);background:rgba(30,30,50,0.9)}
+.card .tags{margin-bottom:5px}
+.tag{display:inline-block;font-size:0.58rem;padding:2px 6px;border-radius:8px;margin-right:3px}
+.t-openai{background:rgba(0,200,100,0.2);color:#00c864;border:1px solid rgba(0,200,100,0.3)}
+.t-google{background:rgba(60,130,255,0.2);color:#3c82ff;border:1px solid rgba(60,130,255,0.3)}
+.t-anthropic{background:rgba(200,140,80,0.2);color:#c88c50;border:1px solid rgba(200,140,80,0.3)}
+.t-nvidia{background:rgba(118,180,0,0.2);color:#76b400;border:1px solid rgba(118,180,0,0.3)}
+.t-meta{background:rgba(100,100,255,0.2);color:#6464ff;border:1px solid rgba(100,100,255,0.3)}
+.t-intel{background:rgba(0,120,215,0.2);color:#0078d7;border:1px solid rgba(0,120,215,0.3)}
+.t-robot{background:rgba(255,100,100,0.2);color:#ff6464;border:1px solid rgba(255,100,100,0.3)}
+.t-chip{background:rgba(255,200,0,0.2);color:#ffc800;border:1px solid rgba(255,200,0,0.3)}
+.t-policy{background:rgba(180,0,255,0.2);color:#b400ff;border:1px solid rgba(180,0,255,0.3)}
+.t-cn{background:rgba(255,50,50,0.2);color:#ff5050;border:1px solid rgba(255,50,50,0.3)}
+.t-invest{background:rgba(0,200,255,0.2);color:#00c8ff;border:1px solid rgba(0,200,255,0.3)}
+.t-hot{background:rgba(255,60,60,0.25);color:#ff6b6b;border:1px solid rgba(255,60,60,0.3)}
+.t-aws{background:rgba(255,153,0,0.2);color:#ff9900;border:1px solid rgba(255,153,0,0.3)}
+.card .title{font-size:0.92rem;font-weight:bold;color:#f0f0f0;line-height:1.5;margin-bottom:4px}
+.card:hover .title{color:#00ffff}
+.card .desc{font-size:0.76rem;color:#888;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:0.66rem;color:#555}
+.card .source{color:rgba(0,255,255,0.45)}
+.card .arrow{color:rgba(0,255,255,0.25);transition:all 0.3s}
+.card:hover .arrow{color:#00ffff;transform:translateX(4px)}
+.count{font-size:0.7rem;color:rgba(0,255,255,0.35);margin-left:8px}
+
+/* === Tools Grid === */
+.cat-group{margin:20px 0 10px}
+.cat-title{font-size:0.95rem;color:var(--cyan);padding-left:10px;border-left:3px solid var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cat-title .emoji{font-size:1.1rem}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tool-card{background:var(--card);border:1px solid rgba(0,255,255,0.06);border-radius:10px;padding:14px 12px;transition:all 0.3s;cursor:pointer;text-decoration:none;display:flex;flex-direction:column;gap:6px}
+.tool-card:hover{border-color:rgba(0,255,255,0.35);transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,255,255,0.1);background:rgba(30,30,50,0.92)}
+.tool-card .tname{font-size:0.88rem;font-weight:bold;color:#f0f0f0;display:flex;align-items:center;gap:6px}
+.tool-card:hover .tname{color:#00ffff}
+.tool-card .tname .icon{font-size:1.1rem}
+.tool-card .tdesc{font-size:0.7rem;color:#666;line-height:1.5}
+.tool-card .ttag{font-size:0.58rem;padding:2px 6px;border-radius:6px;display:inline-block;align-self:flex-start}
+.tt-chat{background:rgba(0,200,100,0.15);color:#00c864;border:1px solid rgba(0,200,100,0.25)}
+.tt-image{background:rgba(255,100,200,0.15);color:#ff64c8;border:1px solid rgba(255,100,200,0.25)}
+.tt-video{background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.25)}
+.tt-music{background:rgba(180,0,255,0.15);color:#b400ff;border:1px solid rgba(180,0,255,0.25)}
+.tt-code{background:rgba(0,200,255,0.15);color:#00c8ff;border:1px solid rgba(0,200,255,0.25)}
+.tt-search{background:rgba(255,100,100,0.15);color:#ff6464;border:1px solid rgba(255,100,100,0.25)}
+.tt-agent{background:rgba(118,180,0,0.15);color:#76b400;border:1px solid rgba(118,180,0,0.25)}
+.tt-3d{background:rgba(60,130,255,0.15);color:#3c82ff;border:1px solid rgba(60,130,255,0.25)}
+.tt-voice{background:rgba(200,140,80,0.15);color:#c88c50;border:1px solid rgba(200,140,80,0.25)}
+.tt-writing{background:rgba(255,153,0,0.15);color:#ff9900;border:1px solid rgba(255,153,0,0.25)}
+
+/* === Footer === */
+.footer{text-align:center;padding:28px;color:#333;font-size:0.72rem;border-top:1px solid rgba(255,255,255,0.04);margin-top:30px}
+.footer a{color:rgba(0,255,255,0.35);text-decoration:none}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.06),rgba(0,0,0,0.06) 1px,transparent 1px,transparent 3px);pointer-events:none;z-index:999}
+
+/* === Responsive === */
+@media(max-width:600px){.tool-grid{grid-template-columns:repeat(2,1fr)}.tool-card{padding:10px 8px}}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<div class="header">
+  <h1>🌍 全球 AI 中心 · 新闻 + 工具导航</h1>
+  <div class="sub">NEWS · TOOLS · ALL LINKS TO ORIGINAL SITES</div>
+  <div class="update-time" id="updateTime"></div>
+</div>
+
+<!-- 顶层 Tab -->
+<div class="toptabs">
+  <button class="toptab active" data-panel="news">📰 全球新闻</button>
+  <button class="toptab" data-panel="tools">🛠️ AI 工具导航</button>
+</div>
+
+<!-- 新闻子 Tab -->
+<div class="newstabs" id="newsTabs">
+  <button class="newstab active" data-tab="all">🌐 全部</button>
+  <button class="newstab" data-tab="model">🧠 大模型</button>
+  <button class="newstab" data-tab="chip">⚡ 芯片算力</button>
+  <button class="newstab" data-tab="robot">🤖 机器人</button>
+  <button class="newstab" data-tab="invest">💰 投融资</button>
+  <button class="newstab" data-tab="policy">📜 监管政策</button>
+</div>
+
+<div class="container">
+
+<!-- ==================== 新闻面板 ==================== -->
+<div class="panel active" id="panel-news">
+
+  <div class="section active" id="sec-model">
+    <div class="section-title">🧠 大模型 · 模型竞赛<span class="count">9 条</span></div>
+    <a class="card" href="https://new.qq.com/rain/a/20260422A05YYJ00" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-openai">OpenAI</span><span class="tag t-google">Google</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">OpenAI 发布 ChatGPT Images 2.0 · 谷歌推出 Gemini 3.1 Pro 深度研究代理</div>
+      <div class="desc">ChatGPT Images 2.0 单次可生成8张连贯图像，面向全球免费开放；Gemini 3.1 Pro 支持MCP协议与多模态自主研究；百灵大模型发布Ling-2.6-flash，1/10成本跑出超高性能</div>
+      <div class="meta"><span class="source">AIbase/腾讯 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://news.sina.cn/ai/2026-04-21/detail-inhvheyy6160336.d.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-google">Google</span><span class="tag t-anthropic">Anthropic</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">谷歌创始人布林重新出山！组建突击队，要啃 AI 编程硬骨头</div>
+      <div class="desc">Sergey Brin与DeepMind CTO直接参与AI编程优化，受Anthropic近期AI模型推动，Claude Code项目称Anthropic近乎100%代码由AI编写</div>
+      <div class="meta"><span class="source">新浪/The Information · 2026-04-21</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.toutiao.com/article/7627404872031273526/" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-anthropic">Anthropic</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">Anthropic 收入反超 OpenAI：14 个月 19 倍增长的秘诀</div>
+      <div class="desc">年化收入从90亿飙升至300亿美金，推进"CASH"项目让AI自己操盘增长实验，极度聚焦编程与B2B场景</div>
+      <div class="meta"><span class="source">今日头条 · 2026-04-21</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.huxiu.com/article/4852055.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-openai">OpenAI</span><span class="tag t-anthropic">Anthropic</span><span class="tag t-google">Google</span></div>
+      <div class="title">OpenAI 变形记：从理想主义到超级入口的 8520 亿美元估值困局</div>
+      <div class="desc">转型估值8520亿美元的AI巨头，面临战略失焦、算力分配与盈利压力，与Anthropic效率竞争和谷歌算力围剿</div>
+      <div class="meta"><span class="source">虎嗅 · 2026-04-20</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.sohu.com/a/1012259642_122643244" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-openai">OpenAI</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">OpenAI 三位核心高管同日离职：8520 亿估值下的组织转型与 Sora 之争</div>
+      <div class="desc">首席产品官Kevin Weil、Sora负责人Bill Peebles、企业应用CTO Srinivas Narayanan同日告别，背后是关于Sora关停的董事会拉锯战</div>
+      <div class="meta"><span class="source">搜狐 · 2026-04-21</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.iimedia.cn/c1088/110850.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-openai">OpenAI</span></div>
+      <div class="title">OpenAI Codex 新增 Chronicle：屏幕录制 + 记忆构建</div>
+      <div class="desc">后台录制屏幕自动整理摘要以Markdown保存本地，构建上下文记忆，录制内容临时存储6小时后自动删除</div>
+      <div class="meta"><span class="source">艾媒网 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.sohu.com/a/1012656452_129720" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-google">Google</span><span class="tag t-anthropic">Anthropic</span></div>
+      <div class="title">布林重启「创始人模式」：谷歌组建突击队，重押 AI 编程追赶 Agent</div>
+      <div class="desc">布林要求DeepMind"果断转向"追赶Agent技术，突击队由Sebastian Borgeaud领导</div>
+      <div class="meta"><span class="source">机器之心/搜狐 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://finance.sina.com.cn/tech/roll/2026-04-22/doc-inhvkixy5584573.shtml" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-cn">中国</span></div>
+      <div class="title">Token 两年激增千倍：日均 140 万亿 Token，中国 AI 从 MaaS 向 TaaS 跃迁</div>
+      <div class="desc">日均Token调用量超140万亿，相比2024年初增长1000多倍，竞争核心从模型竞赛转向应用落地</div>
+      <div class="meta"><span class="source">新浪财经 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.sohu.com/a/1012896141_115035" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-cn">中国</span></div>
+      <div class="title">国产多模态 Agent 拿下医学分割 SOTA · 浙大阿里在 Science 揭示大模型 Steering</div>
+      <div class="desc">IBISAgent框架被CVPR2026接收；浙大与阿里在Science发表Steering研究，开源EasyEdit2框架</div>
+      <div class="meta"><span class="source">搜狐 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-chip">
+    <div class="section-title">⚡ 芯片 · 算力<span class="count">7 条</span></div>
+    <a class="card" href="https://blog.csdn.net/canjun_wen/article/details/157176321" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-nvidia">NVIDIA</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">英伟达 Vera Rubin 算力暴涨 3.5 倍！2000 亿订单背后的全栈协同革命</div>
+      <div class="desc">集成6款定制芯片，FP8训练算力3.5倍、推理效率5倍提升，第六代NVLink整合72个GPU为统一算力单元</div>
+      <div class="meta"><span class="source">CSDN · 2026-04-17</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_69369e8ad0473552" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-nvidia">NVIDIA</span></div>
+      <div class="title">Nscale 追加 3 万块英伟达 Rubin GPU 订单，总规模将达 13 万块</div>
+      <div class="desc">2027年部署总量达13万块Vera Rubin，受微软等合作伙伴对先进AI算力需求推动</div>
+      <div class="meta"><span class="source">AIPress · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604203710373820.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-nvidia">NVIDIA</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">H100 租赁价格暴涨 40%！Blackwell 租金涨 48%！所有 GPU 按需容量售罄</div>
+      <div class="desc">H100一年期租赁从1.7美元/小时飙升至2.35美元/小时，英伟达连续11个交易日上涨，市值涨超5900亿美元</div>
+      <div class="meta"><span class="source">东方财富/SemiAnalysis · 2026-04-20</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_05569e4508227652" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-chip">芯片</span></div>
+      <div class="title">AI 芯片初创企业融资创纪录，挑战英伟达霸主地位</div>
+      <div class="desc">越来越多初创公司挑战英伟达GPU垄断，重点从AI训练转向推理效率优化</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-19</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_75069e8a2a126352" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-chip">芯片</span></div>
+      <div class="title">Cerebras 上市：靠 OpenAI 200 亿美元订单"改命"的晶圆级芯片传奇</div>
+      <div class="desc">获OpenAI超200亿美元多年期采购协议，从亏损4.85亿到净利润8790万美元的逆袭</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_11869e0a51223852" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-cn">中国</span><span class="tag t-chip">芯片</span></div>
+      <div class="title">国产 AI 芯片崛起：华为昇腾份额升至 20%，三大门派瓜分英伟达</div>
+      <div class="desc">英伟达份额从70%降至55%，华为昇腾以81.2万张出货量升至20%份额居国产第一</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-16</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.stcn.com/article/detail/3757794.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-nvidia">NVIDIA</span></div>
+      <div class="title">英伟达带火算力芯片：2026 高端 GPU 出货量明显增长，产业链重估</div>
+      <div class="desc">数据中心业务已成全球AI基础设施定价锚，积极推动GB/VR机柜方案</div>
+      <div class="meta"><span class="source">证券时报 · 2026-04-17</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-robot">
+    <div class="section-title">🤖 机器人 · 具身智能<span class="count">6 条</span></div>
+    <a class="card" href="https://k.sina.com.cn/article_7857201856_1d45362c001904l6io.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">人形机器人半马首破 1 小时！荣耀"闪电" 50 分 26 秒夺冠</div>
+      <div class="desc">2026北京亦庄人形机器人半马，300余台双足机器人挑战21公里，首破1小时大关</div>
+      <div class="meta"><span class="source">新浪 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://k.sina.com.cn/article_7857201856_1d45362c001904l0q2.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">35 天后机器人入驻真实家庭！自变量发布 WALL-B</div>
+      <div class="desc">基于WUM架构的具身智能基础模型，突破感知、规划、控制割裂架构，支持家务任务</div>
+      <div class="meta"><span class="source">新浪/澎湃 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604203711016298.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span></div>
+      <div class="title">高德"途途"亮相人形机器人半马，揭开阿里具身智能全栈野心</div>
+      <div class="desc">阿里首个具身智能硬件实体，无人工干预下自主引导视障大学生完成城市道路级挑战</div>
+      <div class="meta"><span class="source">东方财富 · 2026-04-20</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://finance.sina.com.cn/tech/roll/2026-04-22/doc-inhvkuqa4279787.shtml" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span></div>
+      <div class="title">优艾智合破解具身智能"不可能三角"：一脑多态架构</div>
+      <div class="desc">工业具身智能遇泛化、效率、可靠性不可能三角，"一脑多态"架构通过极低样本量快速迁移训练破解困局</div>
+      <div class="meta"><span class="source">新浪财经 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.jiemian.com/article/14287088.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span><span class="tag t-intel">Intel</span></div>
+      <div class="title">英特尔提出"智能体PC"概念 · 第二届世界人形机器人运动会8月举办</div>
+      <div class="desc">智能体PC采用"本地辅脑+云端主脑"混合架构，覆盖轻薄本到AI Box全场景</div>
+      <div class="meta"><span class="source">界面新闻 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.sina.com.cn/roll/2026-04-21/doc-inhvfume6236166.shtml" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-robot">机器人</span></div>
+      <div class="title">5G-A 大上行破局：赋能具身智能规模化落地</div>
+      <div class="desc">人形机器人奔跑中需实时处理海量传感器数据，5G-A为云端协同提供"运动神经"</div>
+      <div class="meta"><span class="source">新浪财经 · 2026-04-21</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-invest">
+    <div class="section-title">💰 投融资 · 产业<span class="count">6 条</span></div>
+    <a class="card" href="https://www.toutiao.com/article/7623613310110351907/" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-openai">OpenAI</span><span class="tag t-invest">融资</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">OpenAI 狂揽 1220 亿美元：计划到 2030 年投入 6000 亿建数据中心</div>
+      <div class="desc">训练GPT-6成本飙至百亿美元级别，高薪挖角谷歌DeepMind顶尖科学家</div>
+      <div class="meta"><span class="source">今日头条 · 2026-04-19</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_67569e04b9311352" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-invest">融资</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">斯坦福 2026 AI 指数：5817 亿美元涌入 AI，生成式 AI 翻 3 倍</div>
+      <div class="desc">全球AI企业投资达5817亿美元同比增长130%，生成式AI单项1709亿美元</div>
+      <div class="meta"><span class="source">企鹅号/斯坦福 · 2026-04-16</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.jiemian.com/article/14287088.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-anthropic">Anthropic</span><span class="tag t-aws">AWS</span></div>
+      <div class="title">Anthropic 承诺未来十年在 AWS 投入超 1000 亿美元</div>
+      <div class="desc">采购当前及未来世代Trainium芯片及数千万颗Graviton核心</div>
+      <div class="meta"><span class="source">界面新闻 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_12669e7dc5a43652" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-invest">融资</span></div>
+      <div class="title">福布斯 2026 AI 50：OpenAI+Anthropic 占八成融资</div>
+      <div class="desc">总融资3056亿美元，OpenAI和Anthropic累计2426亿美元占80%</div>
+      <div class="meta"><span class="source">企鹅号/福布斯 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_61569e814b947352" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-invest">融资</span></div>
+      <div class="title">贝索斯 AI 实验室接近敲定 100 亿美元融资，估值 380 亿美元</div>
+      <div class="desc">Anthropic将获得高达5GW容量用于训练和运行先进AI模型</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604223713965386.html" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">政策</span><span class="tag t-cn">中国</span></div>
+      <div class="title">国务院"人工智能+"再提速：首次明确支持采购大模型、Agent 服务</div>
+      <div class="desc">到2030年服务业总规模迈上100万亿元，Q1工业机器人产量同比增33.2%</div>
+      <div class="meta"><span class="source">东方财富 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-policy">
+    <div class="section-title">📜 监管 · 政策 · 伦理<span class="count">5 条</span></div>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_86969e1061c59752" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">监管</span><span class="tag t-hot">HOT</span></div>
+      <div class="title">AI 监管 2026：欧盟法案全面实施 · 美国放任 · 中国安全优先</div>
+      <div class="desc">欧盟AI法案四风险分级监管；美国NIST强调可解释与公平；中国要求训练数据合规与内容审核</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-16</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_75669e8c30448752" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">欧盟</span></div>
+      <div class="title">欧盟 AI 监管路径生变：考虑延后高风险 AI 合规义务至 2027 年</div>
+      <div class="desc">考虑延后高风险AI系统合规义务，简化技术文档与透明度要求，转向双支柱结构</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-22</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.sina.com.cn/roll/2026-04-20/doc-inhvehiw6734109.shtml" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">中国</span></div>
+      <div class="title">全球首部 AI 情感陪伴监管规则：7 月实施</div>
+      <div class="desc">全球第一部针对AI情感陪伴场景的国家级监管规则，六条红线划定AI伦理边界</div>
+      <div class="meta"><span class="source">新浪财经 · 2026-04-20</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.sohu.com/a/1010129111_122401643" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">全球</span></div>
+      <div class="title">AI 监管战：欧盟严管、美国放任、中国安全优先——全球规则博弈</div>
+      <div class="desc">三极格局下的全球AI治理走向，欧盟天价罚款、美国创新留空间、中国三维度红线</div>
+      <div class="meta"><span class="source">搜狐 · 2026-04-16</span><span class="arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_48569e73e1f06552" target="_blank" rel="noopener">
+      <div class="tags"><span class="tag t-policy">中国</span></div>
+      <div class="title">十部门联合印发《人工智能科技伦理审查与服务办法》</div>
+      <div class="desc">标志中国AI伦理治理从原则倡导迈向制度化新阶段</div>
+      <div class="meta"><span class="source">企鹅号 · 2026-04-21</span><span class="arrow">→</span></div>
+    </a>
+  </div>
+
+</div><!-- /news panel -->
+
+<!-- ==================== 工具导航面板 ==================== -->
+<div class="panel" id="panel-tools">
+
+  <!-- 💬 对话 / Chat -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">💬</span> 对话 / Chat</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://chatgpt.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟢</span>ChatGPT</div>
+        <div class="tdesc">OpenAI 旗舰对话，GPT-4o/o3，多模态</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://claude.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟤</span>Claude</div>
+        <div class="tdesc">Anthropic 对话，Sonnet/Opus，长文本强</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://gemini.google.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔵</span>Gemini</div>
+        <div class="tdesc">Google 对话，Gemini 3.1 Pro，深度研究</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://chat.deepseek.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🐋</span>DeepSeek</div>
+        <div class="tdesc">深度求索，R1推理，开源标杆</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://kimi.moonshot.cn" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🌙</span>Kimi</div>
+        <div class="tdesc">月之暗面，超长上下文，文件解析</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://tongyi.aliyun.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟠</span>通义千问</div>
+        <div class="tdesc">阿里 Qwen，多模态，开源生态</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://yiyan.baidu.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔵</span>文心一言</div>
+        <div class="tdesc">百度 Ernie，中文理解强，知识图谱</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://www.doubao.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🫘</span>豆包</div>
+        <div class="tdesc">字节跳动，Doubao 模型，免费额度多</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://grok.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">⚡</span>Grok</div>
+        <div class="tdesc">xAI 对话，实时 X 数据，无过滤</div>
+        <span class="ttag tt-chat">Chat</span>
+      </a>
+      <a class="tool-card" href="https://www.perplexity.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔮</span>Perplexity</div>
+        <div class="tdesc">AI 搜索+对话，联网引用，Pro Search</div>
+        <span class="ttag tt-search">Search</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🎨 生图 / Image -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">🎨</span> 生图 / Image Generation</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://chatgpt.com/images" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🖼️</span>DALL·E / GPT Image</div>
+        <div class="tdesc">OpenAI 原生生图，ChatGPT 内置</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://www.midjourney.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">✨</span>Midjourney</div>
+        <div class="tdesc">艺术风格标杆，V7，Discord/Web</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://stability.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🧪</span>Stable Diffusion</div>
+        <div class="tdesc">Stability AI，开源生态，本地可跑</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://flux1.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">⚡</span>Flux</div>
+        <div class="tdesc">Black Forest Labs，极致细节，开源</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://ideogram.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔤</span>Ideogram</div>
+        <div class="tdesc">文字渲染强，海报/Logo 首选</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://tongyi.aliyun.com/wanxiang" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🌐</span>通义万相</div>
+        <div class="tdesc">阿里生图，中文理解好，免费额度</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+      <a class="tool-card" href="https://yige.baidu.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎨</span>文心一格</div>
+        <div class="tdesc">百度生图，国风特色</div>
+        <span class="ttag tt-image">Image</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🎬 视频 / Video -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">🎬</span> 视频 / Video Generation</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://sora.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🌀</span>Sora</div>
+        <div class="tdesc">OpenAI 视频生成，60s 长视频</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://runwayml.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎬</span>Runway</div>
+        <div class="tdesc">Gen-4，专业视频创作，编辑套件</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://pika.art" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">⚡</span>Pika</div>
+        <div class="tdesc">Pika 2.0，特效+场景修改</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://klingai.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎯</span>可灵 Kling</div>
+        <div class="tdesc">快手，2min 长视频，运动控制强</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://www.vidu.studio" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎭</span>Vidu</div>
+        <div class="tdesc">生数科技，参考图生视频</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://lumalabs.ai/dream-machine" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">💫</span>Luma Dream Machine</div>
+        <div class="tdesc">Luma AI，快速视频生成，Ray2模型</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+      <a class="tool-card" href="https://www.hailuoai.video" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🐝</span>海螺 AI 视频</div>
+        <div class="tdesc">MiniMax，海螺视频，免费额度多</div>
+        <span class="ttag tt-video">Video</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🎵 音乐 / Music -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">🎵</span> 音乐 / Audio</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://suno.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎶</span>Suno</div>
+        <div class="tdesc">AI 音乐生成，歌词+旋律+演唱</div>
+        <span class="ttag tt-music">Music</span>
+      </a>
+      <a class="tool-card" href="https://www.udio.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🎧</span>Udio</div>
+        <div class="tdesc">高质量 AI 音乐，风格多样</div>
+        <span class="ttag tt-music">Music</span>
+      </a>
+      <a class="tool-card" href="https://elevenlabs.io" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🗣️</span>ElevenLabs</div>
+        <div class="tdesc">AI 语音克隆/TTS，29种语言</div>
+        <span class="ttag tt-voice">Voice</span>
+      </a>
+      <a class="tool-card" href="https://fish.audio" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🐟</span>Fish Audio</div>
+        <div class="tdesc">开源 TTS，语音克隆，中文强</div>
+        <span class="ttag tt-voice">Voice</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 💻 代码 / Code -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">💻</span> 代码 / Coding</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://github.com/features/copilot" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🐙</span>GitHub Copilot</div>
+        <div class="tdesc">VS Code/JetBrains 内嵌，行级补全+Agent</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+      <a class="tool-card" href="https://cursor.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🖱️</span>Cursor</div>
+        <div class="tdesc">AI-first IDE，Composer 多文件编辑</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+      <a class="tool-card" href="https://windsurf.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🏄</span>Windsurf</div>
+        <div class="tdesc">Codeium 出品，Cascade Flow 多步推理</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+      <a class="tool-card" href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟤</span>Claude Code</div>
+        <div class="tdesc">终端 Agent，全项目理解，自主编程</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+      <a class="tool-card" href="https://openai.com/index/introducing-codex/" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟢</span>OpenAI Codex</div>
+        <div class="tdesc">云端代码 Agent，沙箱并行执行</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+      <a class="tool-card" href="https://aider.chat" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🤝</span>Aider</div>
+        <div class="tdesc">终端 AI Pair Programming，Git 集成</div>
+        <span class="ttag tt-code">Code</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🔍 搜索 / Research -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">🔍</span> 搜索 / Deep Research</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://www.perplexity.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔮</span>Perplexity</div>
+        <div class="tdesc">AI 原生搜索，引用溯源，Pro Search</div>
+        <span class="ttag tt-search">Search</span>
+      </a>
+      <a class="tool-card" href="https://gemini.google.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔵</span>Gemini Deep Research</div>
+        <div class="tdesc">Google 深度研究代理，多轮自主搜索</div>
+        <span class="ttag tt-search">Research</span>
+      </a>
+      <a class="tool-card" href="https://chatgpt.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🟢</span>ChatGPT Deep Research</div>
+        <div class="tdesc">OpenAI 深度研究，长时自主浏览分析</div>
+        <span class="ttag tt-search">Research</span>
+      </a>
+      <a class="tool-card" href="https://www.you.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">👀</span>You.com</div>
+        <div class="tdesc">AI 搜索引擎，多模式，Research 模式</div>
+        <span class="ttag tt-search">Search</span>
+      </a>
+      <a class="tool-card" href="https://search.semanix.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🧠</span>秘塔搜索</div>
+        <div class="tdesc">中文 AI 搜索，结构化结果，学术模式</div>
+        <span class="ttag tt-search">Search</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🤖 Agent / Automation -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">🤖</span> Agent / 自动化</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://manus.im" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🦋</span>Manus</div>
+        <div class="tdesc">通用 AI Agent，自主完成复杂任务</div>
+        <span class="ttag tt-agent">Agent</span>
+      </a>
+      <a class="tool-card" href="https://www.devin.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🤓</span>Devin</div>
+        <div class="tdesc">Cognition AI，全自主软件工程师</div>
+        <span class="ttag tt-agent">Agent</span>
+      </a>
+      <a class="tool-card" href="https://www.n8n.io" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔗</span>n8n</div>
+        <div class="tdesc">开源工作流自动化，AI Agent 节点</div>
+        <span class="ttag tt-agent">Workflow</span>
+      </a>
+      <a class="tool-card" href="https://dify.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🧩</span>Dify</div>
+        <div class="tdesc">开源 LLM 应用开发平台，Agent 编排</div>
+        <span class="ttag tt-agent">Platform</span>
+      </a>
+      <a class="tool-card" href="https://www.coze.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🤖</span>Coze</div>
+        <div class="tdesc">字节跳动，零代码 Bot 搭建，插件生态</div>
+        <span class="ttag tt-agent">Platform</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ✍️ 写作 / Writing -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">✍️</span> 写作 / Writing</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://gamma.app" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">📊</span>Gamma</div>
+        <div class="tdesc">AI PPT/文档，一键生成演示文稿</div>
+        <span class="ttag tt-writing">Writing</span>
+      </a>
+      <a class="tool-card" href="https://www.notion.so/product/ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">📝</span>Notion AI</div>
+        <div class="tdesc">笔记+知识库+AI写作，团队协作</div>
+        <span class="ttag tt-writing">Writing</span>
+      </a>
+      <a class="tool-card" href="https://jasper.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">✏️</span>Jasper</div>
+        <div class="tdesc">营销文案 AI，品牌语调一致性</div>
+        <span class="ttag tt-writing">Writing</span>
+      </a>
+      <a class="tool-card" href="https://www.writage.com" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">📖</span>秘塔写作猫</div>
+        <div class="tdesc">中文 AI 写作，语法校对，风格改写</div>
+        <span class="ttag tt-writing">Writing</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 📐 3D / Design -->
+  <div class="cat-group">
+    <div class="cat-title"><span class="emoji">📐</span> 3D / 设计</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://www.meshy.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🧊</span>Meshy</div>
+        <div class="tdesc">文生3D模型，游戏/影视资产</div>
+        <span class="ttag tt-3d">3D</span>
+      </a>
+      <a class="tool-card" href="https://www.tripo3d.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🔺</span>Tripo3D</div>
+        <div class="tdesc">单图生3D，10秒快速建模</div>
+        <span class="ttag tt-3d">3D</span>
+      </a>
+      <a class="tool-card" href="https://lumalabs.ai" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">🌐</span>Luma AI</div>
+        <div class="tdesc">3D 高斯溅射，NeRF 场景重建</div>
+        <span class="ttag tt-3d">3D</span>
+      </a>
+      <a class="tool-card" href="https://www.clipdrop.co" target="_blank" rel="noopener">
+        <div class="tname"><span class="icon">✂️</span>Clipdrop</div>
+        <div class="tdesc">Stability AI 图像编辑套件</div>
+        <span class="ttag tt-image">Design</span>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /tools panel -->
+
+</div><!-- /container -->
+
+<div class="footer">
+  🌍 全球 AI 中心 · 新闻 + 工具导航 &nbsp;|&nbsp; 所有链接指向官方站点 &nbsp;|&nbsp; <a href="#">Powered by QClaw</a>
+</div>
+
+<script>
+// 顶层 Tab 切换
+document.querySelectorAll('.toptab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.toptab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const p=t.dataset.panel;
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    document.getElementById('panel-'+p).classList.add('active');
+    document.getElementById('newsTabs').style.display=p==='news'?'flex':'none';
+  });
+});
+
+// 新闻子 Tab 切换
+document.querySelectorAll('.newstab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.newstab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const s=t.dataset.tab;
+    if(s==='all'){document.querySelectorAll('.section').forEach(x=>x.classList.add('active'))}
+    else{document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById('sec-'+s).classList.add('active')}
+  });
+});
+
+const now=new Date();
+document.getElementById('updateTime').textContent='数据更新：'+now.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'});
+</script>
+</body>
+</html>
