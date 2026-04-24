@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KATANAAI LAB</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--cyan:#00d4ff;--pink:#ff0080;--green:#39d353}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden}
+
+/* === Matrix Background === */
+#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.15;pointer-events:none}
+
+/* === Industrial Decorations === */
+.corner{position:fixed;width:60px;height:60px;border:2px solid var(--border);z-index:1;pointer-events:none}
+.corner.tl{top:20px;left:20px;border-right:none;border-bottom:none}
+.corner.tr{top:20px;right:20px;border-left:none;border-bottom:none}
+.corner.bl{bottom:20px;left:20px;border-right:none;border-top:none}
+.corner.br{bottom:20px;right:20px;border-left:none;border-top:none}
+.corner::before{content:'';position:absolute;width:10px;height:10px;background:var(--cyan)}
+.corner.tl::before{bottom:-2px;right:-2px;box-shadow:0 0 10px var(--cyan)}
+.corner.tr::before{bottom:-2px;left:-2px;box-shadow:0 0 10px var(--cyan)}
+.corner.bl::before{top:-2px;right:-2px;box-shadow:0 0 10px var(--pink)}
+.corner.br::before{top:-2px;left:-2px;box-shadow:0 0 10px var(--pink)}
+
+/* === Scanlines === */
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);pointer-events:none;z-index:999}
+
+/* === Header / Hero === */
+.hero{position:relative;z-index:10;padding:80px 20px 40px;text-align:center;background:linear-gradient(180deg,rgba(0,212,255,0.03) 0%,transparent 100%);border-bottom:1px solid var(--border)}
+
+.logo{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,8vw,4rem);font-weight:900;letter-spacing:0.15em;position:relative;display:inline-block}
+.logo .char{display:inline-block;transition:all 0.1s ease;position:relative}
+.logo .char::before,.logo .char::after{content:attr(data-char);position:absolute;left:0;top:0;opacity:0;pointer-events:none}
+.logo .char::before{color:var(--pink);animation:glitch1 2s infinite;clip-path:polygon(0 0,100% 0,100% 45%,0 45%)}
+.logo .char::after{color:var(--cyan);animation:glitch2 2s infinite;clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%)}
+.logo:hover .char{animation:flicker 0.15s infinite}
+@keyframes glitch1{0%,90%,100%{opacity:0;transform:translate(0)}92%{opacity:0.8;transform:translate(-3px,1px)}94%{opacity:0;transform:translate(3px,0)}96%{opacity:0.5;transform:translate(-2px,-1px)}}
+@keyframes glitch2{0%,88%,100%{opacity:0;transform:translate(0)}91%{opacity:0.6;transform:translate(2px,0)}93%{opacity:0;transform:translate(-2px,1px)}95%{opacity:0.4;transform:translate(1px,-1px)}}
+@keyframes flicker{0%,100%{opacity:1;text-shadow:0 0 10px var(--cyan)}50%{opacity:0.8;text-shadow:0 0 20px var(--cyan),0 0 40px var(--pink)}}
+
+.subtitle{font-size:0.75rem;color:var(--muted);margin-top:15px;letter-spacing:0.3em;text-transform:uppercase}
+.subtitle span{color:var(--green)} 
+.update-time{font-size:0.65rem;color:var(--muted);margin-top:8px;opacity:0.5}
+
+/* === Navigation === */
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.nav-btn{padding:8px 20px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:0.8rem;cursor:pointer;transition:all 0.2s;border-radius:4px}
+.nav-btn:hover,.nav-btn.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px rgba(88,166,255,0.2)}
+.nav-btn.active{background:rgba(88,166,255,0.1)}
+
+/* === Sub Tabs === */
+.subtabs{display:flex;justify-content:center;gap:4px;padding:10px;flex-wrap:wrap;background:var(--card);border-bottom:1px solid var(--border)}
+.subtab{padding:5px 12px;background:transparent;border:1px solid transparent;color:var(--muted);font-family:inherit;font-size:0.7rem;cursor:pointer;transition:all 0.2s;border-radius:3px}
+.subtab:hover{color:var(--text);border-color:var(--border)}
+.subtab.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,212,255,0.05)}
+
+/* === Container === */
+.container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:20px}
+.panel{display:none}.panel.active{display:block}
+
+/* === Section === */
+.section{display:none}.section.active{display:block}
+.section-header{display:flex;align-items:center;gap:10px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-icon{font-size:1.2rem}
+.section-title{font-size:0.9rem;font-weight:700;color:var(--accent);letter-spacing:0.05em}
+.section-count{font-size:0.65rem;color:var(--muted);background:var(--card);padding:2px 8px;border-radius:10px;border:1px solid var(--border)}
+
+/* === News Cards === */
+.card{display:block;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:var(--accent);opacity:0;transition:opacity 0.2s}
+.card:hover{border-color:var(--accent);transform:translateX(4px);box-shadow:0 4px 20px rgba(88,166,255,0.1)}
+.card:hover::before{opacity:1}
+.card-tags{margin-bottom:6px}
+.tag{display:inline-block;font-size:0.55rem;padding:2px 6px;border-radius:3px;margin-right:4px;border:1px solid;font-family:inherit}
+.t-openai{border-color:#10a37f;color:#10a37f;background:rgba(16,163,127,0.1)}
+.t-google{border-color:#4285f4;color:#4285f4;background:rgba(66,133,244,0.1)}
+.t-anthropic{border-color:#d97706;color:#d97706;background:rgba(217,119,6,0.1)}
+.t-nvidia{border-color:#76b900;color:#76b900;background:rgba(118,185,0,0.1)}
+.t-meta{border-color:#0668E1;color:#0668E1;background:rgba(6,104,225,0.1)}
+.t-intel{border-color:#0071c5;color:#0071c5;background:rgba(0,113,197,0.1)}
+.t-robot{border-color:#ff6b6b;color:#ff6b6b;background:rgba(255,107,107,0.1)}
+.t-chip{border-color:#ffc107;color:#ffc107;background:rgba(255,193,7,0.1)}
+.t-policy{border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,0.1)}
+.t-cn{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,0.1)}
+.t-invest{border-color:#06b6d4;color:#06b6d4;background:rgba(6,182,212,0.1)}
+.t-hot{border-color:#ff0080;color:#ff0080;background:rgba(255,0,128,0.1)}
+.t-aws{border-color:#ff9900;color:#ff9900;background:rgba(255,153,0,0.1)}
+.card-title{font-size:0.85rem;font-weight:700;color:var(--text);line-height:1.5;margin-bottom:4px}
+.card:hover .card-title{color:var(--accent)}
+.card-desc{font-size:0.7rem;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:0.6rem;color:var(--muted);opacity:0.7}
+.card-arrow{transition:transform 0.2s}
+.card:hover .card-arrow{transform:translateX(4px);color:var(--accent)}
+
+/* === Video List (Long Card Style) === */
+.video-section{margin:30px 0}
+.video-section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.video-section-icon{font-size:1.5rem}
+.video-section-title{font-size:1rem;font-weight:700;letter-spacing:0.05em}
+.bilibili-title{color:#00a1d6}
+.douyin-title{color:#fe2c55}
+.video-list{display:flex;flex-direction:column;gap:12px}
+.video-long-card{display:flex;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;text-decoration:none;transition:all 0.25s;position:relative;height:120px}
+.video-long-card:hover{border-color:var(--accent);transform:translateX(8px);box-shadow:0 6px 25px rgba(88,166,255,0.12)}
+.video-long-thumb{position:relative;width:200px;height:100%;flex-shrink:0;background:linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.video-long-thumb::before{content:'▶';font-size:2.5rem;color:var(--accent);opacity:0.25;transition:all 0.2s}
+.video-long-card:hover .video-long-thumb::before{opacity:0.9;transform:scale(1.15)}
+.video-long-duration{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.85);color:#fff;font-size:0.65rem;padding:3px 8px;border-radius:4px;font-family:inherit;font-weight:600}
+.video-long-platform{position:absolute;top:8px;left:8px;font-size:0.6rem;padding:3px 10px;border-radius:4px;font-weight:bold;z-index:2}
+.platform-bilibili{background:#00a1d6;color:#fff}
+.platform-douyin{background:#fe2c55;color:#fff}
+.video-long-hot{position:absolute;top:8px;right:8px;background:var(--pink);color:#fff;font-size:0.6rem;padding:3px 10px;border-radius:4px;font-weight:bold;animation:pulse 2s infinite;z-index:2}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.video-long-info{flex:1;padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px;min-width:0}
+.video-long-title{font-size:0.95rem;font-weight:700;color:var(--text);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-long-card:hover .video-long-title{color:var(--accent)}
+.video-long-desc{font-size:0.7rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.video-long-meta{display:flex;align-items:center;gap:20px;font-size:0.65rem;color:var(--muted)}
+.video-long-meta span{display:flex;align-items:center;gap:5px}
+.video-long-stats{margin-left:auto;display:flex;align-items:center;gap:15px}
+@media(max-width:600px){.video-long-card{height:auto;flex-direction:column}.video-long-thumb{width:100%;height:160px}.video-long-info{padding:14px}.video-long-title{white-space:normal;-webkit-line-clamp:2;font-size:0.85rem}.video-long-meta{flex-wrap:wrap;gap:10px}.video-long-stats{margin-left:0;width:100%;justify-content:space-between}}
+
+/* === Tools Grid === */
+.cat-group{margin:25px 0 15px}
+.cat-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.cat-icon{font-size:1.1rem}
+.cat-title{font-size:0.85rem;font-weight:700;color:var(--accent)}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tool-card{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;text-decoration:none;transition:all 0.2s}
+.tool-card:hover{border-color:var(--cyan);transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,212,255,0.15)}
+.tool-name{font-size:0.75rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.tool-card:hover .tool-name{color:var(--cyan)}
+.tool-desc{font-size:0.6rem;color:var(--muted);line-height:1.5}
+.tool-tag{font-size:0.55rem;padding:2px 6px;border-radius:3px;align-self:flex-start}
+.tt-chat{border-color:#10a37f;color:#10a37f;background:rgba(16,163,127,0.1)}
+.tt-image{border-color:#ec4899;color:#ec4899;background:rgba(236,72,153,0.1)}
+.tt-video{border-color:#f59e0b;color:#f59e0b;background:rgba(245,158,11,0.1)}
+.tt-music{border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,0.1)}
+.tt-code{border-color:#06b6d4;color:#06b6d4;background:rgba(6,182,212,0.1)}
+.tt-search{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,0.1)}
+.tt-agent{border-color:#84cc16;color:#84cc16;background:rgba(132,204,22,0.1)}
+.tt-3d{border-color:#3b82f6;color:#3b82f6;background:rgba(59,130,246,0.1)}
+.tt-voice{border-color:#d97706;color:#d97706;background:rgba(217,119,6,0.1)}
+.tt-writing{border-color:#f97316;color:#f97316;background:rgba(249,115,22,0.1)}
+
+/* === Footer === */
+.footer{text-align:center;padding:30px;color:var(--muted);font-size:0.65rem;border-top:1px solid var(--border);margin-top:40px}
+.footer a{color:var(--accent);text-decoration:none}
+
+/* === Responsive === */
+@media(max-width:600px){.tool-grid{grid-template-columns:repeat(2,1fr)}.logo{letter-spacing:0.08em}}
+
+/* === Pixel Ninja Cat Assistant === */
+.samurai-wrap{position:fixed;right:24px;bottom:90px;z-index:1000;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.4s cubic-bezier(.34,1.56,.64,1),opacity 0.3s}
+.samurai-wrap.hidden{transform:translateX(160px);opacity:0;pointer-events:none}
+.samurai-bubble{position:relative;background:var(--card);border:1px solid var(--accent);border-radius:14px 14px 4px 14px;padding:10px 14px;max-width:190px;font-size:0.68rem;color:var(--text);line-height:1.55;box-shadow:0 4px 20px rgba(88,166,255,0.18);animation:float 3.5s ease-in-out infinite;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s}
+.samurai-bubble:hover{border-color:var(--cyan);box-shadow:0 4px 28px rgba(0,212,255,0.28)}
+.samurai-bubble::after{content:'';position:absolute;bottom:-9px;right:18px;width:0;height:0;border-left:9px solid transparent;border-right:0 solid transparent;border-top:9px solid var(--accent)}
+.samurai-bubble-close{position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:var(--pink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.55rem;cursor:pointer;opacity:0;transition:opacity 0.2s;color:#fff;font-weight:bold}
+.samurai-bubble:hover .samurai-bubble-close{opacity:1}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* Pixel Cat - crisp edges */
+.samurai-char{width:90px;height:110px;position:relative;cursor:pointer;filter:drop-shadow(0 0 10px rgba(88,166,255,0.35));transition:filter 0.3s,transform 0.3s;image-rendering:pixelated;image-rendering:crisp-edges}
+.samurai-char:hover{filter:drop-shadow(0 0 18px rgba(0,212,255,0.6));transform:scale(1.08)}
+.samurai-char.bowing{animation:bow 1.1s steps(4)}
+@keyframes bow{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(5deg) translateY(4px)}50%{transform:rotate(10deg) translateY(8px)}75%{transform:rotate(5deg) translateY(4px)}100%{transform:rotate(0) translateY(0)}}
+.samurai-close{position:absolute;top:-10px;right:-10px;width:22px;height:22px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--muted);cursor:pointer;transition:all 0.2s;opacity:0}
+.samurai-wrap:hover .samurai-close{opacity:1}
+.samurai-close:hover{background:var(--pink);color:#fff;border-color:var(--pink)}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes tail{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+/* === Message Modal === */
+.msg-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center}
+.msg-modal.active{display:flex}
+.msg-box{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:30px;width:90%;max-width:400px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.msg-title{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:var(--accent);text-align:center}
+.msg-subtitle{font-size:0.7rem;color:var(--muted);text-align:center;margin-bottom:20px}
+.msg-textarea{width:100%;min-height:120px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:inherit;font-size:0.8rem;resize:vertical;transition:border-color 0.2s}
+.msg-textarea:focus{outline:none;border-color:var(--accent)}
+.msg-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:0.75rem;margin-bottom:12px;transition:border-color 0.2s}
+.msg-input:focus{outline:none;border-color:var(--accent)}
+.msg-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--cyan));border:none;border-radius:8px;padding:12px;color:#fff;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:15px}
+.msg-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(88,166,255,0.4)}
+.msg-close{position:absolute;top:15px;right:15px;width:30px;height:30px;background:transparent;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.msg-close:hover{background:var(--pink);color:#fff;border-color:var(--pink)}
+.msg-success{display:none;text-align:center;padding:20px}
+.msg-success-icon{font-size:3rem;margin-bottom:15px}
+.msg-success-text{font-size:0.9rem;color:var(--text);margin-bottom:8px}
+.msg-success-sub{font-size:0.7rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<div class="hero">
+  <div class="logo" id="logo"></div>
+  <div class="subtitle">GLOBAL AI INTELLIGENCE · <span>NOW</span> · TOOLS · RESEARCH</div>
+  <div class="update-time" id="updateTime">LAST SYNC: 2026-04-24 23:00 · Asia/Shanghai</div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" data-panel="news">// NEWS</button>
+  <button class="nav-btn" data-panel="video">// VIDEO</button>
+  <button class="nav-btn" data-panel="tools">// TOOLS</button>
+</div>
+
+<div class="subtabs" id="subtabs">
+  <button class="subtab active" data-tab="all">ALL</button>
+  <button class="subtab" data-tab="model">MODEL</button>
+  <button class="subtab" data-tab="chip">CHIP</button>
+  <button class="subtab" data-tab="robot">ROBOT</button>
+  <button class="subtab" data-tab="invest">INVEST</button>
+  <button class="subtab" data-tab="policy">POLICY</button>
+</div>
+
+<div class="container">
+<!-- ==================== NEWS ==================== -->
+<div class="panel active" id="panel-news">
+
+  <div class="section active" id="sec-model">
+    <div class="section-header"><span class="section-icon">🧠</span><span class="section-title">LARGE MODELS</span><span class="section-count">9</span></div>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_78669eae23050052" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">DeepSeek-V4 预览版正式上线并开源 · 百万字超长上下文，Agent能力国内领先</div>
+      <div class="card-desc">支持1M上下文窗口，Agent编程能力达开源最佳，API同步更新为deepseek-v4-pro和deepseek-v4-flash</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://www.sohu.com/a/1014161892_260616" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">美团万亿参数大模型 LongCat-2.0-Preview 开放测试 · 国产算力训练突破</div>
+      <div class="card-desc">参数规模突破万亿，全程依托国产算力集群完成训练，动用5-6万张算力卡，面向Agent场景深度优化</div>
+      <div class="card-meta"><span>搜狐 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_65869eadcaf93852" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">腾讯混元 Hy3 preview 重磅上线并开源 · 姚顺雨带队"推倒重建"混元体系</div>
+      <div class="card-desc">前OpenAI研究员姚顺雨入职后首个重磅成果，快慢思考融合的混合专家模型，告别"应试时代"冲刺实用赛道</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://www.iheima.com/article-396647.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">阿里 Qwen3.6-Max-Preview 发布 · Kimi K2.6 开源升级长程编码与Agent集群能力</div>
+      <div class="card-desc">本周模型发布密集窗口期：月之暗面Kimi K2.6支持动态任务拆解与多子Agent并行协作</div>
+      <div class="card-meta"><span>i黑马 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604243717184841.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-openai">OpenAI</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">OpenAI 发布 GPT-5.5 · 面向Agent编程、知识工作、科学研究场景</div>
+      <div class="card-desc">定位实际工作与智能体应用，能力对标万亿参数国产大模型</div>
+      <div class="card-meta"><span>东方财富 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_63969e95f2324452" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">懂车帝汽车垂类大模型通过国家备案 · 立足独家汽车行业数据</div>
+      <div class="card-desc">适用于汽车选买、知识问答、网销客服、内容生成等场景，满足"看选买用玩"全生命周期需求</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.guancha.cn/wangruoyu/GongYe%C2%B7KeJi" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">合成生物智能新范式：活体神经元与电子设备深度融合</div>
+      <div class="card-desc">科学家构建"合成生物智能"，让生物神经网络在与环境互动中自主学习、适应甚至"思考"</div>
+      <div class="card-meta"><span>观察者网 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://eu.36kr.com/en/p/3707071743668359" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">MWC观察：手机"长手脚"、机器人弃遥控器，AI硬件大战全面打响</div>
+      <div class="card-desc">AI开始反过来定义硬件，硬件形态不再一成不变：人形机器人、AI眼镜、机器人手机层出不穷</div>
+      <div class="card-meta"><span>36氪 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_33069eb36fc77352" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">AI实锤突破：硅基胜碳基、模型争霸、算力暴涨齐爆发</div>
+      <div class="card-desc">从国家部委红头文件到硅谷巨头模型大战，再到北京亦庄机器人马拉松，AI以"周"为单位重塑认知</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-chip">
+    <div class="section-header"><span class="section-icon">⚡</span><span class="section-title">CHIP & COMPUTE</span><span class="section-count">7</span></div>
+    <a class="card" href="https://k.sina.com.cn/article_5952915705_162d248f906702u58o.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">特斯拉 AI5 芯片发布 · 算力 2500 TOPS，较 AI4 提升约 40 倍</div>
+      <div class="card-desc">第五代AI芯片单芯片算力接近2500 TOPS，内存容量增至144GB，采用台积电3nm+三星2nm双代工</div>
+      <div class="card-meta"><span>新浪网 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://yuanchuang.10jqka.com.cn/20260424/c676246854.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">富瀚微机器人芯片批量出货 · 工业视觉芯片量产供货</div>
+      <div class="card-desc">工业视觉芯片已量产并供货工业机器人客户，通过方案公司向头部人形机器人客户批量出货</div>
+      <div class="card-meta"><span>同花顺 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://blog.csdn.net/canjun_wen/article/details/157176321" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-nvidia">NVIDIA</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">英伟达 Vera Rubin 算力暴涨 3.5 倍！2000 亿订单背后的全栈协同革命</div>
+      <div class="card-desc">集成6款定制芯片，FP8训练算力3.5倍、推理效率5倍提升</div>
+      <div class="card-meta"><span>CSDN · 2026-04-17</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604203710373820.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-nvidia">NVIDIA</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">H100 租赁价格暴涨 40%！Blackwell 租金涨 48%！所有 GPU 按需容量售罄</div>
+      <div class="card-desc">H100一年期租赁从1.7美元/小时飙升至2.35美元/小时</div>
+      <div class="card-meta"><span>东方财富 · 2026-04-20</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_75069e8a2a126352" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-chip">芯片</span></div>
+      <div class="card-title">Cerebras 上市：靠 OpenAI 200 亿美元订单"改命"的晶圆级芯片传奇</div>
+      <div class="card-desc">获OpenAI超200亿美元多年期采购协议，从亏损4.85亿到净利润8790万美元</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-22</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_11869e0a51223852" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span><span class="tag t-chip">芯片</span></div>
+      <div class="card-title">国产 AI 芯片崛起：华为昇腾份额升至 20%，三大门派瓜分英伟达</div>
+      <div class="card-desc">英伟达份额从70%降至55%，华为昇腾以81.2万张出货量升至20%份额</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-16</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://www.stcn.com/article/detail/3757794.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-nvidia">NVIDIA</span></div>
+      <div class="card-title">英伟达带火算力芯片：2026 高端 GPU 出货量明显增长，产业链重估</div>
+      <div class="card-desc">数据中心业务已成全球AI基础设施定价锚</div>
+      <div class="card-meta"><span>证券时报 · 2026-04-17</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-robot">
+    <div class="section-header"><span class="section-icon">🤖</span><span class="section-title">ROBOTICS</span><span class="section-count">6</span></div>
+    <a class="card" href="https://finance.sina.com.cn/jjxw/2026-04-24/doc-inhvpyyh4504379.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">特斯拉 Optimus V3 年中亮相 · 7-8月正式投产，2027年投入外部应用</div>
+      <div class="card-desc">第三代人形机器人预计年中亮相，凭借动力电池、电机电控及AI芯片垂直整合能力，有望率先实现万台级年产量</div>
+      <div class="card-meta"><span>新浪财经 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://new.qq.com/rain/a/20260424A02TVU00" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">普渡机器人完成近10亿元融资 · 估值突破100亿元</div>
+      <div class="card-desc">商用服务机器人企业本轮融资由龙岗金控、亚投资本联合领投，北汽产投、蓝思科技、弘晖基金等共同参与</div>
+      <div class="card-meta"><span>腾讯网 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_74669eaecb396152" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span></div>
+      <div class="card-title">西门子发布 Eigen Engineering Agent · 自主执行工业AI任务</div>
+      <div class="card-desc">汉诺威工业博览会重磅发布，能理解项目需求、编写自动化代码、配置硬件网络，已在19国超100家企业试点</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://k.sina.com.cn/article_7857201856_1d45362c001904l6io.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">人形机器人半马首破 1 小时！荣耀"闪电" 50 分 26 秒夺冠</div>
+      <div class="card-desc">2026北京亦庄人形机器人半马，300余台双足机器人挑战21公里，行业从"技术展示"迈向"经济可行"</div>
+      <div class="card-meta"><span>新浪 · 2026-04-22</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://k.sina.com.cn/article_7857201856_1d45362c001904l0q2.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span></div>
+      <div class="card-title">35 天后机器人入驻真实家庭！自变量发布 WALL-B</div>
+      <div class="card-desc">基于WUM架构的具身智能基础模型，突破感知、规划、控制割裂架构</div>
+      <div class="card-meta"><span>新浪 · 2026-04-22</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://finance.sina.com.cn/roll/2026-04-24/doc-inhvramy4650418.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-robot">机器人</span></div>
+      <div class="card-title">无问智科完成超亿元融资 · 物理AI数据基座打造者</div>
+      <div class="card-desc">建成全国首个虚实融合闭环具身智能数据采集训练场，覆盖室内3000㎡、室外505亩、全域937平方公里三级训练体系</div>
+      <div class="card-meta"><span>新浪财经 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-invest">
+    <div class="section-header"><span class="section-icon">💰</span><span class="section-title">INVESTMENT</span><span class="section-count">6</span></div>
+    <a class="card" href="https://news.pedaily.cn/202604/563152.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">DeepSeek 启动首轮融资 · 融前估值3000亿元，计划增资500亿</div>
+      <div class="card-desc">腾讯、阿里两家科技巨头已入局洽谈，估值从此前超100亿美元飙升至440亿美元</div>
+      <div class="card-meta"><span>投资界 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_67069eabb5d79752" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">Cognition AI 洽谈新融资 · 估值达250亿美元</div>
+      <div class="card-desc">AI编程企业估值将翻一倍以上，市场对AI软件开发领域需求持续走高</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://new.qq.com/rain/a/20260424A07SW100" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-invest">融资</span></div>
+      <div class="card-title">AI创投周报 · Upscale AI洽谈2亿美元融资，NeoCognition获4000万美元种子轮</div>
+      <div class="card-desc">本周AI创业公司融资活跃，多家企业获得大额融资</div>
+      <div class="card-meta"><span>腾讯网 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://k.sina.com.cn/article_5952915720_162d2490806703s1ey.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-policy">政策</span></div>
+      <div class="card-title">全球AI数据中心融资深度对比 · 到2030年需投资6.7万亿美元</div>
+      <div class="card-desc">算力投入呈现高密度、高能耗、高资本化特征，中美银行角色差异明显</div>
+      <div class="card-meta"><span>新浪网 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604243717184841.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-openai">OpenAI</span></div>
+      <div class="card-title">OpenAI 发布 GPT-5.5 · 面向Agent编程、知识工作、科学研究场景</div>
+      <div class="card-desc">新一代大模型定位实际工作与智能体应用</div>
+      <div class="card-meta"><span>东方财富 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.eastmoney.com/a/202604223713965386.html" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-policy">政策</span><span class="tag t-cn">中国</span></div>
+      <div class="card-title">国务院"人工智能+"再提速 · 首次明确支持采购大模型、Agent服务</div>
+      <div class="card-desc">到2030年服务业总规模迈上100万亿元，AI产业从技术攻坚转向商业化落地</div>
+      <div class="card-meta"><span>东方财富 · 2026-04-22</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="section active" id="sec-policy">
+    <div class="section-header"><span class="section-icon">📜</span><span class="section-title">POLICY & ETHICS</span><span class="section-count">5</span></div>
+    <a class="card" href="https://news.pedaily.cn/202604/563148.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span><span class="tag t-hot">HOT</span></div>
+      <div class="card-title">广东发布人工智能行动方案 · 加快推进"人工智能+"全域全时全行业应用</div>
+      <div class="card-desc">涵盖脑机接口、生物制造、医药器械等"人工智能+"系列政策，打造全国AI融合应用高地</div>
+      <div class="card-meta"><span>投资界 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_75669e8c30448752" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-policy">欧盟</span></div>
+      <div class="card-title">欧盟 AI 监管路径生变：考虑延后高风险 AI 合规义务至 2027 年</div>
+      <div class="card-desc">考虑延后高风险AI系统合规义务，简化技术文档与透明度要求</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-22</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="http://finance.sina.com.cn/roll/2026-04-20/doc-inhvehiw6734109.shtml" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">全球首部 AI 情感陪伴监管规则 · 7 月实施，六条红线划定伦理边界</div>
+      <div class="card-desc">全球第一部针对AI情感陪伴场景的国家级监管规则</div>
+      <div class="card-meta"><span>新浪财经 · 2026-04-20</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://caifuhao.eastmoney.com/news/20260424091754999989730" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">工信部系统布局6G研发 · 上海实施"AI+制造"专项行动</div>
+      <div class="card-desc">深入实施"人工智能+"行动，支持研发行业垂类大模型</div>
+      <div class="card-meta"><span>东方财富 · 2026-04-24</span><span class="card-arrow">→</span></div>
+    </a>
+    <a class="card" href="https://so.html5.qq.com/page/real/search_news?docid=70000021_48569e73e1f06552" target="_blank" rel="noopener">
+      <div class="card-tags"><span class="tag t-cn">中国</span></div>
+      <div class="card-title">十部门联合印发《人工智能科技伦理审查与服务办法》</div>
+      <div class="card-desc">标志中国AI伦理治理从原则倡导迈向制度化新阶段</div>
+      <div class="card-meta"><span>企鹅号 · 2026-04-21</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+</div><!-- /NEWS -->
+
+<!-- ==================== VIDEO ==================== -->
+<div class="panel" id="panel-video">
+
+  <!-- Bilibili Section -->
+  <div class="video-section">
+    <div class="video-section-header">
+      <span class="video-section-icon">📺</span>
+      <span class="video-section-title bilibili-title">BILIBILI 热门AI视频</span>
+    </div>
+    <div class="video-list">
+      <a class="video-long-card" href="https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87%E3%80%8A%E7%89%8C%E5%AD%90%E3%80%8B+DiDi_OK" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-bilibili">B站</span>
+          <span class="video-long-hot">HOT</span>
+          <span class="video-long-duration">07:32</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">AI短片《牌子》：当城市路牌成为现实规则</div>
+          <div class="video-long-desc">B站AI创作大赛一等奖，单条播放1865万。神秘的问号牌子引发全球性混乱，骑自行车的狗熊、巴别塔上的"三不猴"、蚕食文字的贪吃蛇...导演DiDi_OK用7分钟构建了一个由规则和符号构成的奇异世界。《流浪地球》导演郭帆转发点赞。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：DiDi_OK</span>
+            <span>🏆 AI创作大赛一等奖</span>
+            <div class="video-long-stats">
+              <span>▶ 1865万播放</span>
+              <span>👍 80万点赞</span>
+              <span>💬 30万弹幕</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://search.bilibili.com/all?keyword=%E3%80%90%E7%BD%91%E7%AB%99%E3%80%91%E5%BD%93%E8%A7%82%E6%B5%8B%E5%8D%B3%E6%98%AF%E5%AD%98%E5%9C%A8+DiDi_OK" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-bilibili">B站</span>
+          <span class="video-long-hot">HOT</span>
+          <span class="video-long-duration">11:24</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">【网站】当观测即是存在，你能忍住不看吗？</div>
+          <div class="video-long-desc">充满隐喻和科幻色彩的AI短片，核心设定围绕"观察即存在"的量子力学概念展开。故事始于一个名为"别处新闻"的神秘网站，视觉特效丰富、节奏紧凑，结局发人深省。B站百万大奖UP主DiDi_OK最新力作。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：DiDi_OK</span>
+            <span>🎬 科幻/悬疑</span>
+            <div class="video-long-stats">
+              <span>▶ 960万播放</span>
+              <span>👍 19万点赞</span>
+              <span>💬 3.8万评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://search.bilibili.com/all?keyword=%E9%87%8D%E7%94%9F%E6%88%90%E4%B8%AD%E5%8D%8E%E7%94%B0%E5%9B%AD%E7%8A%AC+AI%E5%8A%A8%E7%94%BB" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-bilibili">B站</span>
+          <span class="video-long-duration">04:55</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">重生成中华田园犬 AI动画系列</div>
+          <div class="video-long-desc">以中华田园犬为主角的AI动画短片，展现中国传统文化与现代AI技术的融合。独特的视角、温馨的故事，单条播放近千万，成为AI动画领域的现象级作品。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：伟神的老弟专家</span>
+            <span>🎨 AI动画</span>
+            <div class="video-long-stats">
+              <span>▶ 近千万播放</span>
+              <span>👍 12万点赞</span>
+              <span>💬 8900评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://search.bilibili.com/all?keyword=%E7%9B%98%E7%82%B9%E7%AE%97%E5%87%BA%E7%9A%84%E7%A6%BB%E8%B0%B1%E6%95%B0%E5%AD%A6%E7%AD%94%E6%A1%88" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-bilibili">B站</span>
+          <span class="video-long-duration">08:42</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">盘点算出的离谱数学答案 系列爆款</div>
+          <div class="video-long-desc">"小明打喷嚏的威力是一亿帕"、"教室里共有40.5个学生"、"快递平均运送时间5000年"...用AI生成的离谱数学答案，配合荒诞的画面呈现，系列多条视频播放量超200万。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：伟神的老弟专家</span>
+            <span>😂 搞笑/创意</span>
+            <div class="video-long-stats">
+              <span>▶ 200万+播放</span>
+              <span>👍 8万点赞</span>
+              <span>💬 4500评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Douyin Section -->
+  <div class="video-section">
+    <div class="video-section-header">
+      <span class="video-section-icon">🎵</span>
+      <span class="video-section-title douyin-title">DOUYIN 热门AI视频</span>
+    </div>
+    <div class="video-list">
+      <a class="video-long-card" href="https://www.douyin.com/search/AI%E7%9F%AD%E7%89%87%E5%91%8A%E5%88%AB" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-douyin">抖音</span>
+          <span class="video-long-hot">HOT</span>
+          <span class="video-long-duration">05:18</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">AI短片《告别》：全网播放破亿的温情之作</div>
+          <div class="video-long-desc">一群即将毕业的大学生，用商汤Seko AI视频工具创作。第一人称视角，胶片质感画面，讲述普通人与一生挚爱告别的故事。用冰冷技术传递温暖情感，实现"全AI但没有AI味的短片"。入围北影节AIGC竞赛单元。</div>
+          <div class="video-long-meta">
+            <span>👤 创作者：编导李让 / 商汤Seko</span>
+            <span>🎬 温情/剧情</span>
+            <div class="video-long-stats">
+              <span>▶ 1亿+播放</span>
+              <span>❤️ 130万点赞</span>
+              <span>💬 12万评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://www.douyin.com/search/%E4%BB%BF%E7%94%9F%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%81%90%E6%80%96%E7%9A%84%E6%96%B0%E8%BF%9B%E5%B1%95" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-douyin">抖音</span>
+          <span class="video-long-duration">03:20</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">仿生机器人"恐怖"的新进展实录</div>
+          <div class="video-long-desc">AI创业者U航连续发布仿生机器人最新进展，亲见仿生机器人"恐怖"的新能力。从动作协调性到环境适应能力，展示当前仿生机器人技术的突破性进展。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：U航</span>
+            <span>🤖 科技/机器人</span>
+            <div class="video-long-stats">
+              <span>▶ 156万播放</span>
+              <span>❤️ 4.2万点赞</span>
+              <span>💬 2.1万评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://www.douyin.com/search/00%E5%90%8E%E8%88%AA%E7%A9%BA%E5%AE%9E%E9%AA%8C" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-douyin">抖音</span>
+          <span class="video-long-duration">06:15</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">航空概念火热之下，00后青年在忙什么</div>
+          <div class="video-long-desc">00后创作者LShang001的实验视频，展示航空概念火热之下，中国的青年们具体在忙些什么。知识正在最新的实践中验证与重构，以更年轻的视野与体格封装。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：LShang001</span>
+            <span>✈️ 科普/实验</span>
+            <div class="video-long-stats">
+              <span>▶ 89万播放</span>
+              <span>❤️ 2.8万点赞</span>
+              <span>💬 5600评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a class="video-long-card" href="https://www.douyin.com/search/AI%E8%B4%BA%E5%B2%81%E5%89%A7%E9%A9%AC%E4%B8%8A%E6%9C%89%E6%88%8F" target="_blank" rel="noopener">
+        <div class="video-long-thumb">
+          <span class="video-long-platform platform-douyin">抖音</span>
+          <span class="video-long-duration">02:48</span>
+        </div>
+        <div class="video-long-info">
+          <div class="video-long-title">AI贺岁剧《马不停蹄》：白龙马终于当了主角</div>
+          <div class="video-long-desc">AI贺岁短剧，白龙马终于当了主角！创意十足的AI生成剧情，将经典角色以全新视角呈现，#马上有戏 #AI贺岁剧马上有戏 话题热度持续攀升。</div>
+          <div class="video-long-meta">
+            <span>👤 UP主：富婆的一万个墙头</span>
+            <span>🎭 短剧/创意</span>
+            <div class="video-long-stats">
+              <span>▶ 234万播放</span>
+              <span>❤️ 6.5万点赞</span>
+              <span>💬 1.8万评论</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /VIDEO -->
+
+<!-- ==================== TOOLS ==================== -->
+<div class="panel" id="panel-tools">
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">💬</span><span class="cat-title">CHAT / DIALOGUE</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://chatgpt.com" target="_blank"><div class="tool-name">🟢 ChatGPT</div><div class="tool-desc">OpenAI 旗舰，GPT-4o/o3</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://claude.ai" target="_blank"><div class="tool-name">🟤 Claude</div><div class="tool-desc">Anthropic，长文本强</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://gemini.google.com" target="_blank"><div class="tool-name">🔵 Gemini</div><div class="tool-desc">Google，深度研究</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://chat.deepseek.com" target="_blank"><div class="tool-name">🐋 DeepSeek</div><div class="tool-desc">R1推理，开源标杆</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://kimi.moonshot.cn" target="_blank"><div class="tool-name">🌙 Kimi</div><div class="tool-desc">超长上下文，文件解析</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://tongyi.aliyun.com" target="_blank"><div class="tool-name">🟠 通义千问</div><div class="tool-desc">阿里 Qwen，多模态</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://yiyan.baidu.com" target="_blank"><div class="tool-name">🔵 文心一言</div><div class="tool-desc">百度 Ernie，中文强</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://www.doubao.com" target="_blank"><div class="tool-name">🫘 豆包</div><div class="tool-desc">字节，免费额度多</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://grok.com" target="_blank"><div class="tool-name">⚡ Grok</div><div class="tool-desc">xAI，实时X数据</div><span class="tool-tag tt-chat">Chat</span></a>
+      <a class="tool-card" href="https://www.perplexity.ai" target="_blank"><div class="tool-name">🔮 Perplexity</div><div class="tool-desc">AI搜索+对话，Pro</div><span class="tool-tag tt-search">Search</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">🎨</span><span class="cat-title">IMAGE GENERATION</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://chatgpt.com/images" target="_blank"><div class="tool-name">🖼️ DALL·E</div><div class="tool-desc">OpenAI原生生图</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://www.midjourney.com" target="_blank"><div class="tool-name">✨ Midjourney</div><div class="tool-desc">艺术风格标杆V7</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://stability.ai" target="_blank"><div class="tool-name">🧪 Stable Diffusion</div><div class="tool-desc">开源生态，本地可跑</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://flux1.ai" target="_blank"><div class="tool-name">⚡ Flux</div><div class="tool-desc">极致细节，开源</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://ideogram.ai" target="_blank"><div class="tool-name">🔤 Ideogram</div><div class="tool-desc">文字渲染强</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://tongyi.aliyun.com/wanxiang" target="_blank"><div class="tool-name">🌐 通义万相</div><div class="tool-desc">阿里生图，中文好</div><span class="tool-tag tt-image">Image</span></a>
+      <a class="tool-card" href="https://yige.baidu.com" target="_blank"><div class="tool-name">🎨 文心一格</div><div class="tool-desc">百度生图，国风</div><span class="tool-tag tt-image">Image</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">🎬</span><span class="cat-title">VIDEO GENERATION</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://sora.com" target="_blank"><div class="tool-name">🌀 Sora</div><div class="tool-desc">OpenAI，60s长视频</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://runwayml.com" target="_blank"><div class="tool-name">🎬 Runway</div><div class="tool-desc">Gen-4，专业创作</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://pika.art" target="_blank"><div class="tool-name">⚡ Pika</div><div class="tool-desc">Pika 2.0，特效</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://klingai.com" target="_blank"><div class="tool-name">🎯 可灵 Kling</div><div class="tool-desc">快手，2min长视频</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://www.vidu.studio" target="_blank"><div class="tool-name">🎭 Vidu</div><div class="tool-desc">生数科技，图生视频</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://lumalabs.ai/dream-machine" target="_blank"><div class="tool-name">💫 Luma</div><div class="tool-desc">Dream Machine，快</div><span class="tool-tag tt-video">Video</span></a>
+      <a class="tool-card" href="https://www.hailuoai.video" target="_blank"><div class="tool-name">🐝 海螺AI视频</div><div class="tool-desc">MiniMax，免费多</div><span class="tool-tag tt-video">Video</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">🎵</span><span class="cat-title">MUSIC & AUDIO</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://suno.com" target="_blank"><div class="tool-name">🎶 Suno</div><div class="tool-desc">AI音乐，词曲演唱</div><span class="tool-tag tt-music">Music</span></a>
+      <a class="tool-card" href="https://www.udio.com" target="_blank"><div class="tool-name">🎧 Udio</div><div class="tool-desc">高质量AI音乐</div><span class="tool-tag tt-music">Music</span></a>
+      <a class="tool-card" href="https://elevenlabs.io" target="_blank"><div class="tool-name">🗣️ ElevenLabs</div><div class="tool-desc">语音克隆/TTS</div><span class="tool-tag tt-voice">Voice</span></a>
+      <a class="tool-card" href="https://fish.audio" target="_blank"><div class="tool-name">🐟 Fish Audio</div><div class="tool-desc">开源TTS，中文强</div><span class="tool-tag tt-voice">Voice</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">💻</span><span class="cat-title">CODE / DEVELOPMENT</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://github.com/features/copilot" target="_blank"><div class="tool-name">🐙 GitHub Copilot</div><div class="tool-desc">VS Code内嵌</div><span class="tool-tag tt-code">Code</span></a>
+      <a class="tool-card" href="https://cursor.com" target="_blank"><div class="tool-name">🖱️ Cursor</div><div class="tool-desc">AI-first IDE</div><span class="tool-tag tt-code">Code</span></a>
+      <a class="tool-card" href="https://windsurf.ai" target="_blank"><div class="tool-name">🏄 Windsurf</div><div class="tool-desc">Codeium，Cascade</div><span class="tool-tag tt-code">Code</span></a>
+      <a class="tool-card" href="https://docs.anthropic.com/en/docs/claude-code" target="_blank"><div class="tool-name">🟤 Claude Code</div><div class="tool-desc">终端Agent</div><span class="tool-tag tt-code">Code</span></a>
+      <a class="tool-card" href="https://openai.com/index/introducing-codex/" target="_blank"><div class="tool-name">🟢 OpenAI Codex</div><div class="tool-desc">云端代码Agent</div><span class="tool-tag tt-code">Code</span></a>
+      <a class="tool-card" href="https://aider.chat" target="_blank"><div class="tool-name">🤝 Aider</div><div class="tool-desc">终端Pair Prog</div><span class="tool-tag tt-code">Code</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">🔍</span><span class="cat-title">SEARCH / RESEARCH</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://www.perplexity.ai" target="_blank"><div class="tool-name">🔮 Perplexity</div><div class="tool-desc">AI原生搜索</div><span class="tool-tag tt-search">Search</span></a>
+      <a class="tool-card" href="https://gemini.google.com" target="_blank"><div class="tool-name">🔵 Gemini Research</div><div class="tool-desc">深度研究代理</div><span class="tool-tag tt-search">Research</span></a>
+      <a class="tool-card" href="https://chatgpt.com" target="_blank"><div class="tool-name">🟢 ChatGPT Research</div><div class="tool-desc">长时自主分析</div><span class="tool-tag tt-search">Research</span></a>
+      <a class="tool-card" href="https://www.you.com" target="_blank"><div class="tool-name">👀 You.com</div><div class="tool-desc">AI搜索引擎</div><span class="tool-tag tt-search">Search</span></a>
+      <a class="tool-card" href="https://search.semanix.com" target="_blank"><div class="tool-name">🧠 秘塔搜索</div><div class="tool-desc">中文AI搜索</div><span class="tool-tag tt-search">Search</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">🤖</span><span class="cat-title">AGENT / AUTOMATION</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://manus.im" target="_blank"><div class="tool-name">🦋 Manus</div><div class="tool-desc">通用AI Agent</div><span class="tool-tag tt-agent">Agent</span></a>
+      <a class="tool-card" href="https://www.devin.ai" target="_blank"><div class="tool-name">🤓 Devin</div><div class="tool-desc">全自主软件工程师</div><span class="tool-tag tt-agent">Agent</span></a>
+      <a class="tool-card" href="https://www.n8n.io" target="_blank"><div class="tool-name">🔗 n8n</div><div class="tool-desc">工作流自动化</div><span class="tool-tag tt-agent">Workflow</span></a>
+      <a class="tool-card" href="https://dify.ai" target="_blank"><div class="tool-name">🧩 Dify</div><div class="tool-desc">LLM应用平台</div><span class="tool-tag tt-agent">Platform</span></a>
+      <a class="tool-card" href="https://www.coze.com" target="_blank"><div class="tool-name">🤖 Coze</div><div class="tool-desc">字节，零代码Bot</div><span class="tool-tag tt-agent">Platform</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">✍️</span><span class="cat-title">WRITING</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://gamma.app" target="_blank"><div class="tool-name">📊 Gamma</div><div class="tool-desc">AI PPT/文档</div><span class="tool-tag tt-writing">Writing</span></a>
+      <a class="tool-card" href="https://www.notion.so/product/ai" target="_blank"><div class="tool-name">📝 Notion AI</div><div class="tool-desc">笔记+知识库</div><span class="tool-tag tt-writing">Writing</span></a>
+      <a class="tool-card" href="https://jasper.ai" target="_blank"><div class="tool-name">✏️ Jasper</div><div class="tool-desc">营销文案AI</div><span class="tool-tag tt-writing">Writing</span></a>
+      <a class="tool-card" href="https://www.writage.com" target="_blank"><div class="tool-name">📖 秘塔写作猫</div><div class="tool-desc">中文AI写作</div><span class="tool-tag tt-writing">Writing</span></a>
+    </div>
+  </div>
+
+  <div class="cat-group">
+    <div class="cat-header"><span class="cat-icon">📐</span><span class="cat-title">3D / DESIGN</span></div>
+    <div class="tool-grid">
+      <a class="tool-card" href="https://www.meshy.ai" target="_blank"><div class="tool-name">🧊 Meshy</div><div class="tool-desc">文生3D模型</div><span class="tool-tag tt-3d">3D</span></a>
+      <a class="tool-card" href="https://www.tripo3d.ai" target="_blank"><div class="tool-name">🔺 Tripo3D</div><div class="tool-desc">单图生3D</div><span class="tool-tag tt-3d">3D</span></a>
+      <a class="tool-card" href="https://lumalabs.ai" target="_blank"><div class="tool-name">🌐 Luma AI</div><div class="tool-desc">3D场景重建</div><span class="tool-tag tt-3d">3D</span></a>
+      <a class="tool-card" href="https://www.clipdrop.co" target="_blank"><div class="tool-name">✂️ Clipdrop</div><div class="tool-desc">图像编辑套件</div><span class="tool-tag tt-image">Design</span></a>
+    </div>
+  </div>
+
+</div><!-- /TOOLS -->
+</div>
+
+<div class="footer">
+  KATANAAI LAB · GLOBAL AI INTELLIGENCE HUB &nbsp;|&nbsp; <a href="https://github.com/121803909/ai-hub">GITHUB</a>
+</div>
+
+<script>
+// === LOGO GLITCH EFFECT ===
+const logo = document.getElementById('logo');
+const text = 'KATANAAI LAB';
+logo.innerHTML = text.split('').map(c => `<span class="char" data-char="${c}">${c}</span>`).join('');
+
+logo.addEventListener('mousemove', e => {
+  const chars = logo.querySelectorAll('.char');
+  const rect = logo.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  chars.forEach((char, i) => {
+    const cr = char.getBoundingClientRect();
+    const cx = cr.left - rect.left + cr.width/2;
+    const dist = Math.abs(mx - cx);
+    const maxD = rect.width / 2;
+    const shift = ((maxD - dist) / maxD) * 8;
+    char.style.transform = `translateY(${(Math.random() - 0.5) * shift}px)`;
+    char.style.textShadow = `${(Math.random() - 0.5) * shift}px 0 var(--pink), ${(Math.random() - 0.5) * shift}px 0 var(--cyan)`;
+  });
+});
+logo.addEventListener('mouseleave', () => {
+  logo.querySelectorAll('.char').forEach(c => { c.style.transform = ''; c.style.textShadow = ''; });
+});
+
+// === MATRIX RAIN ===
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+let cols, drops = [];
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF{}[]<>/\\|';
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  cols = Math.floor(canvas.width / 20);
+  drops = Array(cols).fill(1);
+}
+resize();
+window.addEventListener('resize', resize);
+function draw() {
+  ctx.fillStyle = 'rgba(13,17,23,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00d4ff';
+  ctx.font = '14px JetBrains Mono';
+  for (let i = 0; i < drops.length; i++) {
+    const txt = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = Math.random() > 0.98 ? '#ff0080' : '#00d4ff';
+    ctx.fillText(txt, i * 20, drops[i] * 20);
+    if (drops[i] * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 50);
+
+// === NAV TABS ===
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const p = btn.dataset.panel;
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    document.getElementById('panel-' + p).classList.add('active');
+    const subtabs = document.getElementById('subtabs');
+    if (subtabs) subtabs.style.display = (p === 'news') ? 'flex' : 'none';
+  });
+});
+
+// === SUB TABS ===
+document.querySelectorAll('.subtab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.subtab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const s = btn.dataset.tab;
+    if (s === 'all') document.querySelectorAll('.section').forEach(x => x.classList.add('active'));
+    else {
+      document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+      document.getElementById('sec-' + s).classList.add('active');
+    }
+  });
+});
+
+// === TIME ===
+document.getElementById('updateTime').textContent = 'LAST SYNC: ' + new Date().toLocaleString('en-US', {timeZone:'Asia/Shanghai',hour12:false}).replace(',',' ·');
+
+// === CYBER SAMURAI ASSISTANT ===
+const samuraiWrap = document.createElement('div');
+samuraiWrap.className = 'samurai-wrap';
+samuraiWrap.innerHTML = `
+  <div class="samurai-bubble" id="samuraiBubble">
+    <div class="samurai-bubble-text" id="samuraiText">点击给我留言，我会转告站长！</div>
+    <div class="samurai-bubble-close" onclick="event.stopPropagation();hideSamurai()">×</div>
+  </div>
+  <div class="samurai-char" id="samuraiChar" onclick="openMessageModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 110" width="90" height="110" shape-rendering="crispEdges">
+      <defs>
+        <filter id="pixelGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      
+      <!-- PIXEL ART NINJA CAT -->
+      <!-- Scale: each pixel = 3 units -->
+      
+      <!-- Katana (behind body) -->
+      <!-- Blade -->
+      <rect x="66" y="8" width="6" height="42" fill="#e8e8e8"/>
+      <rect x="66" y="8" width="3" height="42" fill="#a0d8ef"/>
+      <!-- Guard -->
+      <rect x="63" y="48" width="12" height="6" fill="#ff0080" filter="url(#pixelGlow)"/>
+      <!-- Handle -->
+      <rect x="66" y="54" width="6" height="24" fill="#4a3020"/>
+      <rect x="66" y="57" width="6" height="3" fill="#ff0080"/>
+      <rect x="66" y="63" width="6" height="3" fill="#ff0080"/>
+      <rect x="66" y="69" width="6" height="3" fill="#ff0080"/>
+      <!-- Pommel -->
+      <rect x="66" y="78" width="6" height="6" fill="#888"/>
+      
+      <!-- Tail -->
+      <rect x="18" y="60" width="9" height="6" fill="#1a1a1a"/>
+      <rect x="12" y="54" width="9" height="6" fill="#1a1a1a"/>
+      <rect x="9" y="48" width="6" height="6" fill="#1a1a1a"/>
+      <rect x="12" y="42" width="6" height="6" fill="#1a1a1a"/>
+      <rect x="18" y="39" width="6" height="6" fill="#1a1a1a"/>
+      <!-- Tail tip glow -->
+      <rect x="21" y="42" width="3" height="3" fill="#00d4ff" filter="url(#pixelGlow)"/>
+      
+      <!-- Back legs -->
+      <rect x="24" y="87" width="12" height="15" fill="#151515"/>
+      <rect x="54" y="87" width="12" height="15" fill="#151515"/>
+      
+      <!-- Body -->
+      <rect x="27" y="54" width="36" height="39" fill="#1a1a1a"/>
+      <rect x="30" y="57" width="30" height="33" fill="#222"/>
+      
+      <!-- Front legs -->
+      <rect x="30" y="90" width="9" height="15" fill="#1a1a1a"/>
+      <rect x="51" y="90" width="9" height="15" fill="#1a1a1a"/>
+      
+      <!-- Collar -->
+      <rect x="27" y="51" width="36" height="6" fill="#00a1d6"/>
+      <rect x="30" y="54" width="30" height="3" fill="#00d4ff"/>
+      <!-- Collar gem -->
+      <rect x="42" y="48" width="6" height="6" fill="#ff0080" filter="url(#pixelGlow)"/>
+      
+      <!-- Head -->
+      <rect x="30" y="21" width="30" height="30" fill="#1a1a1a"/>
+      <rect x="33" y="24" width="24" height="24" fill="#222"/>
+      
+      <!-- Ears -->
+      <rect x="27" y="15" width="9" height="12" fill="#1a1a1a"/>
+      <rect x="54" y="15" width="9" height="12" fill="#1a1a1a"/>
+      <!-- Inner ear -->
+      <rect x="30" y="18" width="3" height="6" fill="#ff0080" opacity="0.7"/>
+      <rect x="57" y="18" width="3" height="6" fill="#ff0080" opacity="0.7"/>
+      
+      <!-- Eyes (glowing cyan) -->
+      <rect x="33" y="33" width="9" height="9" fill="#00ffff" filter="url(#pixelGlow)"/>
+      <rect x="48" y="33" width="9" height="9" fill="#00ffff" filter="url(#pixelGlow)"/>
+      <!-- Pupils -->
+      <rect x="36" y="36" width="3" height="6" fill="#000"/>
+      <rect x="51" y="36" width="3" height="6" fill="#000"/>
+      <!-- Eye shine -->
+      <rect x="39" y="33" width="3" height="3" fill="#fff"/>
+      <rect x="54" y="33" width="3" height="3" fill="#fff"/>
+      
+      <!-- Nose -->
+      <rect x="42" y="45" width="6" height="3" fill="#ff69b4"/>
+      
+      <!-- Whiskers -->
+      <rect x="21" y="42" width="9" height="3" fill="#58a6ff" opacity="0.6"/>
+      <rect x="21" y="48" width="9" height="3" fill="#58a6ff" opacity="0.6"/>
+      <rect x="60" y="42" width="9" height="3" fill="#58a6ff" opacity="0.6"/>
+      <rect x="60" y="48" width="9" height="3" fill="#58a6ff" opacity="0.6"/>
+      
+      <!-- Paws detail -->
+      <rect x="33" y="99" width="3" height="3" fill="#333"/>
+      <rect x="54" y="99" width="3" height="3" fill="#333"/>
+    </svg>
+  </div>
+  <div class="samurai-close" onclick="hideSamurai()" title="隐藏">×</div>
+`;
+document.body.appendChild(samuraiWrap);
+
+// Message Modal
+const modal = document.createElement('div');
+modal.className = 'msg-modal';
+modal.id = 'msgModal';
+modal.innerHTML = `
+  <div class="msg-box">
+    <div class="msg-close" onclick="closeMessageModal()">×</div>
+    <div id="msgFormContent">
+      <div class="msg-title">🐈⁠‍⬛ 给站长留言</div>
+      <div class="msg-subtitle">您的建议会发送给 121803909@qq.com</div>
+      <input type="text" class="msg-input" id="msgName" placeholder="您的称呼（可选）">
+      <input type="email" class="msg-input" id="msgEmail" placeholder="您的邮箱（可选，方便回复）">
+      <textarea class="msg-textarea" id="msgContent" placeholder="请输入您的留言、建议或反馈..."></textarea>
+      <button class="msg-btn" onclick="sendMessage()">✉️ 发送留言</button>
+    </div>
+    <div class="msg-success" id="msgSuccess">
+      <div class="msg-success-icon">🐈⁠‍⬛</div>
+      <div class="msg-success-text">喵！感谢您的留言！</div>
+      <div class="msg-success-sub">武士已鞠躬致谢，消息将送达站长</div>
+    </div>
+  </div>
+`;
+document.body.appendChild(modal);
+
+// Samurai Messages
+const samuraiMessages = [
+  "点击我，给站长发送消息 ✉️",
+  "喵—— 有什么建议吗？",
+  "我背着刀，但我更喜欢听反馈 😺",
+  "发现bug？快告诉我！",
+  "想要新功能？留言给我 💡",
+  "KatanaAI Lab 感谢您的访问！",
+  "喵喵喵～ 期待您的反馈",
+  "点击我给站长发信 🐈⁠‍⬛"
+];
+
+let msgIndex = 0;
+setInterval(() => {
+  msgIndex = (msgIndex + 1) % samuraiMessages.length;
+  const bubble = document.getElementById('samuraiText');
+  if (bubble && !document.getElementById('msgModal').classList.contains('active')) {
+    bubble.style.opacity = '0';
+    setTimeout(() => {
+      bubble.textContent = samuraiMessages[msgIndex];
+      bubble.style.opacity = '1';
+    }, 300);
+  }
+}, 5000);
+
+function openMessageModal() {
+  document.getElementById('msgModal').classList.add('active');
+  document.getElementById('msgContent').focus();
+}
+
+function closeMessageModal() {
+  document.getElementById('msgModal').classList.remove('active');
+  document.getElementById('msgFormContent').style.display = 'block';
+  document.getElementById('msgSuccess').style.display = 'none';
+}
+
+function hideSamurai() {
+  document.querySelector('.samurai-wrap').classList.add('hidden');
+  setTimeout(() => {
+    if (confirm('武士已隐藏，是否彻底关闭？\n（刷新页面可重新显示）')) {
+      localStorage.setItem('samuraiHidden', 'true');
+    } else {
+      document.querySelector('.samurai-wrap').classList.remove('hidden');
+    }
+  }, 300);
+}
+
+function sendMessage() {
+  const name = document.getElementById('msgName').value || '匿名访客';
+  const email = document.getElementById('msgEmail').value || '';
+  const content = document.getElementById('msgContent').value.trim();
+  
+  if (!content) {
+    alert('请输入留言内容');
+    return;
+  }
+  
+  // Bow animation
+  const char = document.getElementById('samuraiChar');
+  char.classList.add('bowing');
+  setTimeout(() => char.classList.remove('bowing'), 1000);
+  
+  // Send email via mailto
+  const subject = encodeURIComponent('[KatanaAI Lab] 用户留言 - ' + name);
+  const body = encodeURIComponent(
+    '【KatanaAI Lab 用户留言】\n\n' +
+    '称呼：' + name + '\n' +
+    '邮箱：' + (email || '未提供') + '\n' +
+    '时间：' + new Date().toLocaleString('zh-CN') + '\n\n' +
+    '留言内容：\n' + content + '\n\n' +
+    '-------------------\n来自 KatanaAI Lab 网站'
+  );
+  
+  window.location.href = 'mailto:121803909@qq.com?subject=' + subject + '&body=' + body;
+  
+  // Show success
+  document.getElementById('msgFormContent').style.display = 'none';
+  document.getElementById('msgSuccess').style.display = 'block';
+  
+  // Update bubble text
+  document.getElementById('samuraiText').textContent = '感谢您的留言！喵喵喵～ 🐈⁠‍⬛';
+  
+  // Close modal after delay
+  setTimeout(closeMessageModal, 3000);
+}
+
+// Check if hidden
+if (localStorage.getItem('samuraiHidden') === 'true') {
+  document.querySelector('.samurai-wrap').classList.add('hidden');
+}
+
+// Close modal on outside click
+document.getElementById('msgModal').addEventListener('click', (e) => {
+  if (e.target.id === 'msgModal') closeMessageModal();
+});
+</script>
+</body>
+</html>
