@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KATANAAI LAB</title>
+<style>
+:root{--bg:#fafbfc;--card:#fff;--accent:#0066ff;--accent2:#6366f1;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--shadow:0 1px 3px rgba(0,0,0,.08);--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{opacity:.8}
+
+/* Header */
+.header{background:#fff;border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:800;letter-spacing:2px;color:var(--text)}
+.logo span{color:var(--accent)}
+.tagline{font-size:12px;color:var(--muted);letter-spacing:1px}
+
+/* Nav */
+.nav{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:65px;z-index:99;overflow-x:auto}
+.nav::-webkit-scrollbar{display:none}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;gap:0}
+.nav-btn{padding:14px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Main */
+.main{max-width:1200px;margin:0 auto;padding:24px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Section Title */
+.sec-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sec-title .icon{font-size:20px}
+
+/* Cards Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:32px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:.2s;position:relative;overflow:hidden}
+.card:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-2px)}
+.card-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin-bottom:10px}
+.card-tag.model{background:#ede9fe;color:#6366f1}
+.card-tag.chip{background:#dbeafe;color:#2563eb}
+.card-tag.robot{background:#d1fae5;color:#059669}
+.card-tag.finance{background:#fef3c7;color:#d97706}
+.card-tag.policy{background:#fce7f3;color:#db2777}
+.card-tag.paper{background:#e0e7ff;color:#4338ca}
+.card-tag.opensource{background:#dcfce7;color:#16a34a}
+.card-tag.event{background:#f0f9ff;color:#0284c7}
+.card-tag.learn{background:#fdf4ff;color:#a855f7}
+.card-tag.market{background:#fff7ed;color:#ea580c}
+.card-tag.community{background:#fef2f2;color:#dc2626}
+.card-tag.art{background:#faf5ff;color:#9333ea}
+.card-tag.job{background:#f0fdf4;color:#15803d}
+.card-title{font-size:15px;font-weight:600;margin-bottom:6px;line-height:1.4}
+.card-title a{color:var(--text)}
+.card-title a:hover{color:var(--accent)}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{font-size:11px;color:#9ca3af;display:flex;gap:12px}
+
+/* Sub-tabs */
+.sub-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.sub-btn{padding:6px 14px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:.2s}
+.sub-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sub-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Video Cards */
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;transition:.2s}
+.video-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.video-thumb{width:180px;min-height:100px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.video-info{padding:12px 16px;flex:1}
+.video-info h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.video-info p{font-size:12px;color:var(--muted)}
+.video-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;color:#fff}
+.video-badge.bili{background:#00a1d6}
+.video-badge.douyin{background:#fe2c55}
+
+/* Tool Grid */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:32px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:.2s}
+.tool-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
+.tool-icon{font-size:28px;margin-bottom:6px}
+.tool-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.tool-desc{font-size:11px;color:var(--muted)}
+
+/* Calendar */
+.event-item{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.event-date{text-align:center;min-width:56px;flex-shrink:0}
+.event-date .month{font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase}
+.event-date .day{font-size:22px;font-weight:800;color:var(--text)}
+.event-detail h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.event-detail p{font-size:12px;color:var(--muted)}
+.event-detail .loc{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* Market Data */
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:32px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.data-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.data-value{font-size:24px;font-weight:800;color:var(--text)}
+.data-change{font-size:12px;font-weight:600}
+.data-change.up{color:#16a34a}
+.data-change.down{color:#dc2626}
+
+/* Job Cards */
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
+.job-card h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.job-card .company{font-size:12px;color:var(--accent);font-weight:500}
+.job-card .info{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Footer */
+.footer{text-align:center;padding:32px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+
+/* Pixel Cat */
+.cat-wrap{position:fixed;right:20px;bottom:20px;z-index:200;cursor:pointer}
+.cat-wrap:hover .cat-body{transform:scale(1.1)}
+.cat-body{width:40px;height:40px;transition:.2s}
+.cat-dialog{position:fixed;right:70px;bottom:20px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;width:280px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none;z-index:201}
+.cat-dialog.show{display:block}
+.cat-dialog h4{font-size:14px;font-weight:600;margin-bottom:8px}
+.cat-dialog input,.cat-dialog textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;margin-bottom:8px;font-family:inherit;resize:vertical}
+.cat-dialog textarea{height:60px}
+.cat-dialog button{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%}
+.cat-dialog button:hover{opacity:.9}
+
+/* Responsive */
+@media(max-width:768px){.grid{grid-template-columns:1fr}.video-card{flex-direction:column}.video-thumb{width:100%;min-height:140px}.tool-grid{grid-template-columns:repeat(2,1fr)}.data-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+<div class="header-inner">
+<div>
+<div class="logo">KATANAAI <span>LAB</span></div>
+<div class="tagline">AI · TECH · FUTURE</div>
+</div>
+<div style="font-size:12px;color:var(--muted)" id="dateDisplay"></div>
+</div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+<div class="nav-inner" id="navBar">
+<button class="nav-btn active" data-tab="news">📰 新闻</button>
+<button class="nav-btn" data-tab="papers">📄 论文</button>
+<button class="nav-btn" data-tab="video">🎬 视频</button>
+<button class="nav-btn" data-tab="tools">🔧 工具</button>
+<button class="nav-btn" data-tab="opensource">⭐ 开源</button>
+<button class="nav-btn" data-tab="events">📅 日历</button>
+<button class="nav-btn" data-tab="learn">📚 学习</button>
+<button class="nav-btn" data-tab="market">📊 数据</button>
+<button class="nav-btn" data-tab="community">💬 社区</button>
+<button class="nav-btn" data-tab="art">🎨 艺术</button>
+<button class="nav-btn" data-tab="jobs">💼 招聘</button>
+</div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- ==================== NEWS ==================== -->
+<div class="panel active" id="panel-news">
+<div class="sec-title"><span class="icon">📰</span> 全球AI新闻</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="news-model">大模型</button>
+<button class="sub-btn" data-sub="news-chip">芯片算力</button>
+<button class="sub-btn" data-sub="news-robot">机器人</button>
+<button class="sub-btn" data-sub="news-finance">投融资</button>
+<button class="sub-btn" data-sub="news-policy">监管政策</button>
+</div>
+
+<div class="grid" id="news-model">
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://www.sohu.com/a/1013182928_121718165" target="_blank">字节跳动发布GRN：像画家一样"边画边改"的AI图像生成新范式</a></div><div class="card-desc">字节跳动研究团队提出全新图像生成方式，打破传统扩散模型"从噪点到清晰"的单向路径，实现像画家一样反复修改的创作流程。论文编号 arXiv:2604.13030</div><div class="card-meta"><span>搜狐</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://www.sohu.com/a/1013183024_121718165" target="_blank">英伟达研究院让AI训练提速4倍，彻底改变大模型蒸馏玩法</a></div><div class="card-desc">NVIDIA研究团队提出新蒸馏方法，基于一致性原则将大模型训练速度提升4倍，论文编号 arXiv:2604.13010v1</div><div class="card-meta"><span>搜狐</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="#" target="_blank">ChatGPT Images 2.0上线，AI生图质量再突破</a></div><div class="card-desc">OpenAI推出ChatGPT Images 2.0，图像生成质量大幅提升，支持更复杂场景和细节渲染</div><div class="card-meta"><span>OpenAI</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="#" target="_blank">谷歌Gemini 3.1 Pro深度研究功能发布</a></div><div class="card-desc">谷歌发布Gemini 3.1 Pro，深度研究模式可自动搜索、整理、分析复杂问题</div><div class="card-meta"><span>Google</span><span>2026-04-21</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="#" target="_blank">百灵大模型Ling-2.6-flash发布，推理速度提升3倍</a></div><div class="card-desc">百灵AI推出Ling-2.6-flash版本，在保持精度的同时将推理速度提升3倍，适用于实时对话场景</div><div class="card-meta"><span>百灵AI</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="#" target="_blank">Anthropic年化收入300亿美元，反超OpenAI</a></div><div class="card-desc">Anthropic年度收入达300亿美元，实现19倍增长，在AI大模型赛道首次超越OpenAI</div><div class="card-meta"><span>The Information</span><span>2026-04-20</span></div></div>
+</div>
+
+<div class="grid" id="news-chip" style="display:none">
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="#" target="_blank">英伟达Vera Rubin发布：算力提升3.5倍，推理效率5倍</a></div><div class="card-desc">NVIDIA新一代Vera Rubin架构发布，计算性能提升3.5倍，推理效率提升5倍，重新定义AI芯片标准</div><div class="card-meta"><span>NVIDIA</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="#" target="_blank">GPU租赁价格暴涨：H100涨至$2.35/小时，涨幅40%</a></div><div class="card-desc">受大模型训练需求驱动，H100 GPU租赁价格持续攀升，云服务商纷纷上调算力定价</div><div class="card-meta"><span>GPU Benchmark</span><span>2026-04-21</span></div></div>
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="#" target="_blank">AMD连涨12天创新高，AI芯片市场份额持续扩大</a></div><div class="card-desc">AMD股价连续12天上涨，MI400系列AI芯片获大客户订单，市场份额稳步提升</div><div class="card-meta"><span>Reuters</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="#" target="_blank">华为昇腾国内份额升至20%，国产AI芯片加速替代</a></div><div class="card-desc">华为昇腾910系列在国内AI训练市场占比突破20%，国产芯片替代进程加速推进</div><div class="card-meta"><span>36氪</span><span>2026-04-20</span></div></div>
+</div>
+
+<div class="grid" id="news-robot" style="display:none">
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="#" target="_blank">荣耀"闪电"人形机器人半马夺冠：50分26秒</a></div><div class="card-desc">荣耀"闪电"人形机器人在半程马拉松中以50分26秒的成绩夺冠，打破历史纪录</div><div class="card-meta"><span>新华社</span><span>2026-04-21</span></div></div>
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="#" target="_blank">2026人形机器人市场规模预计突破500亿元</a></div><div class="card-desc">工信部数据显示，2026年中国人形机器人市场规模预计突破500亿元，2035年有望突破万亿元</div><div class="card-meta"><span>工信部</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="#" target="_blank">优艾智合破解"不可能三角"：泛化+效率+可靠性</a></div><div class="card-desc">优艾智合通过"一脑多态"架构实现机器人泛化能力、运行效率与可靠性的同时突破</div><div class="card-meta"><span>机器之心</span><span>2026-04-20</span></div></div>
+</div>
+
+<div class="grid" id="news-finance" style="display:none">
+<div class="card"><span class="card-tag finance">投融资</span><div class="card-title"><a href="#" target="_blank">2025全球AI投资5817亿美元，同比增长130%</a></div><div class="card-desc">斯坦福AI指数报告显示，2025年全球AI投资总额达5817亿美元，同比增长130%，创历史新高</div><div class="card-meta"><span>Stanford HAI</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag finance">投融资</span><div class="card-title"><a href="#" target="_blank">AI Agent元年：市场将破480亿元</a></div><div class="card-desc">字节、腾讯、百度全力布局AI Agent，市场规模预计2026年突破480亿元</div><div class="card-meta"><span>IDC</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag finance">投融资</span><div class="card-title"><a href="#" target="_blank">Cerebras上市，AI芯片赛道再添巨头</a></div><div class="card-desc">晶圆级AI芯片公司Cerebras成功上市，估值超50亿美元，挑战NVIDIA市场地位</div><div class="card-meta"><span>Bloomberg</span><span>2026-04-21</span></div></div>
+</div>
+
+<div class="grid" id="news-policy" style="display:none">
+<div class="card"><span class="card-tag policy">监管政策</span><div class="card-title"><a href="#" target="_blank">欧盟《AI法案》全面生效，四级风险分级</a></div><div class="card-desc">欧盟AI法案正式全面生效，按四级风险分类监管AI应用，违规最高罚款3500万欧元或全球营收7%</div><div class="card-meta"><span>EU</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag policy">监管政策</span><div class="card-title"><a href="#" target="_blank">全球首部AI情感陪伴监管：中国7月15日实施</a></div><div class="card-desc">中国发布全球首部AI情感陪伴监管法规，将于2026年7月15日正式实施</div><div class="card-meta"><span>国务院</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag policy">监管政策</span><div class="card-title"><a href="#" target="_blank">Character.AI全球首例AI致死案和解</a></div><div class="card-desc">14岁少年与AI聊天后自杀案达成和解，引发全球对AI情感陪伴产品安全性的深度讨论</div><div class="card-meta"><span>Reuters</span><span>2026-04-21</span></div></div>
+</div>
+</div>
+
+<!-- ==================== PAPERS ==================== -->
+<div class="panel" id="panel-papers">
+<div class="sec-title"><span class="icon">📄</span> arXiv 论文速递</div>
+<div class="grid">
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://blog.csdn.net/weixin_44369324/article/details/158923348" target="_blank">推理诚实性研究：Think Before You Lie</a></div><div class="card-desc">5篇新作探讨大模型推理与诚实性、医疗多模态与决策系统边界，arXiv 2026-03-11精选</div><div class="card-meta"><span>CSDN</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1013182928_121718165" target="_blank">GRN：像画家一样"边画边改"的AI图像生成新范式</a></div><div class="card-desc">字节跳动提出全新图像生成范式，打破扩散模型单向去噪路径。arXiv:2604.13030</div><div class="card-meta"><span>ByteDance</span><span>arXiv:2604.13030</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1013187628_121718165" target="_blank">AI的"拒绝按钮"究竟藏在哪里？</a></div><div class="card-desc">在12个来自6家公司的模型中系统性解剖AI拒答机制，参数量从20亿到720亿。arXiv:2604.04385</div><div class="card-meta"><span>独立研究</span><span>arXiv:2604.04385</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1012659116_121718165" target="_blank">Prompt Relay：打破视频AI创作天花板</a></div><div class="card-desc">南洋理工大学提出推理时时间控制方法，实现多事件视频生成。arXiv:2604.10030</div><div class="card-meta"><span>NTU S-Lab</span><span>arXiv:2604.10030</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1013182456_121718165" target="_blank">ZipMo：视频运动预测速度提升万倍</a></div><div class="card-desc">慕尼黑大学+苹果联合研究，"只看动作不看画面"实现万倍加速。arXiv:2604.11737</div><div class="card-meta"><span>LMU+Apple</span><span>arXiv:2604.11737</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1013182471_121718165" target="_blank">华为：结构化图谱彻底改变AI看图方式</a></div><div class="card-desc">华为加拿大团队提出结构化图谱方法用于图像质量评估，发表于ICLR 2026。arXiv:2604.11004</div><div class="card-meta"><span>Huawei</span><span>ICLR 2026</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1013183024_121718165" target="_blank">英伟达：大模型蒸馏提速4倍</a></div><div class="card-desc">NVIDIA研究院基于一致性原则提出新蒸馏方法，训练速度提升4倍。arXiv:2604.13010</div><div class="card-meta"><span>NVIDIA</span><span>arXiv:2604.13010</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://blog.csdn.net/weixin_49122920/article/details/159476557" target="_blank">微软：让AI在现实中越用越聪明的在线体验学习法</a></div><div class="card-desc">微软研究院提出"体验学习"框架，AI在现实交互中持续进化。arXiv:2603.16856</div><div class="card-meta"><span>Microsoft</span><span>arXiv:2603.16856</span></div></div>
+<div class="card"><span class="card-tag paper">arXiv</span><div class="card-title"><a href="https://www.sohu.com/a/1012666440_122036485" target="_blank">波士顿大学：顶尖AI视觉模型存在方向变化识别缺陷</a></div><div class="card-desc">研究发现最先进AI视觉语言模型在图像旋转后识别能力大幅下降。arXiv:2604.01848</div><div class="card-meta"><span>Boston Univ.</span><span>arXiv:2604.01848</span></div></div>
+</div>
+</div>
+
+<!-- ==================== VIDEO ==================== -->
+<div class="panel" id="panel-video">
+<div class="sec-title"><span class="icon">🎬</span> 热门AI视频</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="video-card"><div class="video-thumb" style="background:#e0f2fe"><span style="color:#00a1d6">▶</span></div><div class="video-info"><span class="video-badge bili">B站</span><h4><a href="https://search.bilibili.com/all?keyword=AI+告别+AI短片" target="_blank">《告别》AI短片 — 全网播放破亿</a></h4><p>南京传媒学院毕业生"编导李让"使用商汤Seko制作，入围北影节AIGC竞赛单元</p></div></div>
+<div class="video-card"><div class="video-thumb" style="background:#e0f2fe"><span style="color:#00a1d6">▶</span></div><div class="video-info"><span class="video-badge bili">B站</span><h4><a href="https://search.bilibili.com/all?keyword=AI+牌子+AI动画" target="_blank">《牌子》— 播放量1865万</a></h4><p>DiDi_OK创作，AI生成动画短片，B站热门</p></div></div>
+<div class="video-card"><div class="video-thumb" style="background:#fce7f3"><span style="color:#fe2c55">▶</span></div><div class="video-info"><span class="video-badge douyin">抖音</span><h4><a href="https://www.douyin.com/search/AI贺岁剧" target="_blank">《马不停蹄》AI贺岁剧</a></h4><p>抖音热门AI生成贺岁短剧，AI演员+AI场景</p></div></div>
+<div class="video-card"><div class="video-thumb" style="background:#fce7f3"><span style="color:#fe2c55">▶</span></div><div class="video-info"><span class="video-badge douyin">抖音</span><h4><a href="https://www.douyin.com/search/AI短片+热门" target="_blank">更多抖音AI热门视频</a></h4><p>探索抖音平台更多AI创作内容</p></div></div>
+</div>
+</div>
+
+<!-- ==================== TOOLS ==================== -->
+<div class="panel" id="panel-tools">
+<div class="sec-title"><span class="icon">🔧</span> AI工具导航</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="tool-chat">Chat</button>
+<button class="sub-btn" data-sub="tool-image">生图</button>
+<button class="sub-btn" data-sub="tool-video">生视频</button>
+<button class="sub-btn" data-sub="tool-code">代码</button>
+<button class="sub-btn" data-sub="tool-search">搜索</button>
+</div>
+<div class="tool-grid" id="tool-chat">
+<div class="tool-card" onclick="window.open('https://chat.openai.com')"><div class="tool-icon">🤖</div><div class="tool-name">ChatGPT</div><div class="tool-desc">OpenAI 对话</div></div>
+<div class="tool-card" onclick="window.open('https://claude.ai')"><div class="tool-icon">🧠</div><div class="tool-name">Claude</div><div class="tool-desc">Anthropic 对话</div></div>
+<div class="tool-card" onclick="window.open('https://gemini.google.com')"><div class="tool-icon">💎</div><div class="tool-name">Gemini</div><div class="tool-desc">Google 对话</div></div>
+<div class="tool-card" onclick="window.open('https://tongyi.aliyun.com')"><div class="tool-icon">🔮</div><div class="tool-name">通义千问</div><div class="tool-desc">阿里 对话</div></div>
+<div class="tool-card" onclick="window.open('https://yiyan.baidu.com')"><div class="tool-icon">🎨</div><div class="tool-name">文心一言</div><div class="tool-desc">百度 对话</div></div>
+<div class="tool-card" onclick="window.open('https://kimi.moonshot.cn')"><div class="tool-icon">🌙</div><div class="tool-name">Kimi</div><div class="tool-desc">月之暗面 长文本</div></div>
+<div class="tool-card" onclick="window.open('https://chat.deepseek.com')"><div class="tool-icon">🔍</div><div class="tool-name">DeepSeek</div><div class="tool-desc">深度求索 对话</div></div>
+<div class="tool-card" onclick="window.open('https://chat.zhipu.ai')"><div class="tool-icon">⚡</div><div class="tool-name">智谱清言</div><div class="tool-desc">智谱AI 对话</div></div>
+</div>
+<div class="tool-grid" id="tool-image" style="display:none">
+<div class="tool-card" onclick="window.open('https://midjourney.com')"><div class="tool-icon">🎨</div><div class="tool-name">Midjourney</div><div class="tool-desc">AI绘画</div></div>
+<div class="tool-card" onclick="window.open('https://stablediffusion')"><div class="tool-icon">🖼️</div><div class="tool-name">Stable Diffusion</div><div class="tool-desc">开源生图</div></div>
+<div class="tool-card" onclick="window.open('https://dall-e')"><div class="tool-icon">✨</div><div class="tool-name">DALL·E 3</div><div class="tool-desc">OpenAI 生图</div></div>
+<div class="tool-card" onclick="window.open('https://www.liblib.art')"><div class="tool-icon">🏛️</div><div class="tool-name">LibLib</div><div class="tool-desc">模型社区</div></div>
+<div class="tool-card" onclick="window.open('https://yige.baidu.com')"><div class="tool-icon">🖌️</div><div class="tool-name">文心一格</div><div class="tool-desc">百度生图</div></div>
+<div class="tool-card" onclick="window.open('https://www.seaart.ai')"><div class="tool-icon">🌊</div><div class="tool-name">SeaArt</div><div class="tool-desc">AI创作平台</div></div>
+</div>
+<div class="tool-grid" id="tool-video" style="display:none">
+<div class="tool-card" onclick="window.open('https://runway.ml')"><div class="tool-icon">🎬</div><div class="tool-name">Runway</div><div class="tool-desc">AI视频</div></div>
+<div class="tool-card" onclick="window.open('https://pika.art')"><div class="tool-icon">⚡</div><div class="tool-name">Pika</div><div class="tool-desc">AI视频</div></div>
+<div class="tool-card" onclick="window.open('https://kling.kuaishou.com')"><div class="tool-icon">🎯</div><div class="tool-name">可灵</div><div class="tool-desc">快手AI视频</div></div>
+<div class="tool-card" onclick="window.open('https://hailuoai.video')"><div class="tool-icon">🐿️</div><div class="tool-name">海螺AI</div><div class="tool-desc">MiniMax视频</div></div>
+<div class="tool-card" onclick="window.open('https://vidu.studio')"><div class="tool-icon">🎥</div><div class="tool-name">Vidu</div><div class="tool-desc">生数科技视频</div></div>
+</div>
+<div class="tool-grid" id="tool-code" style="display:none">
+<div class="tool-card" onclick="window.open('https://github.com/features/copilot')"><div class="tool-icon">🐙</div><div class="tool-name">GitHub Copilot</div><div class="tool-desc">AI代码助手</div></div>
+<div class="tool-card" onclick="window.open('https://cursor.sh')"><div class="tool-icon">📐</div><div class="tool-name">Cursor</div><div class="tool-desc">AI编辑器</div></div>
+<div class="tool-card" onclick="window.open('https://codeium.com')"><div class="tool-icon">🔧</div><div class="tool-name">Codeium</div><div class="tool-desc">免费代码助手</div></div>
+<div class="tool-card" onclick="window.open('https://www.tabnine.com')"><div class="tool-icon">⌨️</div><div class="tool-name">Tabnine</div><div class="tool-desc">代码补全</div></div>
+</div>
+<div class="tool-grid" id="tool-search" style="display:none">
+<div class="tool-card" onclick="window.open('https://www.perplexity.ai')"><div class="tool-icon">🔎</div><div class="tool-name">Perplexity</div><div class="tool-desc">AI搜索引擎</div></div>
+<div class="tool-card" onclick="window.open('https://phind.com')"><div class="tool-icon">🎯</div><div class="tool-name">Phind</div><div class="tool-desc">开发者搜索</div></div>
+<div class="tool-card" onclick="window.open('https://devv.ai')"><div class="tool-icon">💡</div><div class="tool-name">Devv.ai</div><div class="tool-desc">编程AI搜索</div></div>
+<div class="tool-card" onclick="window.open('https://metaso.cn')"><div class="tool-icon">📚</div><div class="tool-name">秘塔搜索</div><div class="tool-desc">中文AI搜索</div></div>
+</div>
+</div>
+
+<!-- ==================== OPENSOURCE ==================== -->
+<div class="panel" id="panel-opensource">
+<div class="sec-title"><span class="icon">⭐</span> 开源项目热榜</div>
+<div class="grid">
+<div class="card"><span class="card-tag opensource">🔥 热门</span><div class="card-title"><a href="https://github.com/nousresearch/hermes-agent" target="_blank">Hermes Agent — 自进化AI助手</a></div><div class="card-desc">6.4万⭐ 自进化学习闭环的AI助手，随你成长越用越聪明</div><div class="card-meta"><span>NousResearch</span><span>64k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">🔥 热门</span><div class="card-title"><a href="https://github.com/abhigyanpatwari/GitNexus" target="_blank">GitNexus — 零服务器代码智能引擎</a></div><div class="card-desc">2.4万⭐ 浏览器可视化代码结构，帮助AI编程工具理解依赖关系</div><div class="card-meta"><span>abhigyanpatwari</span><span>24k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">🔥 热门</span><div class="card-title"><a href="https://github.com/openclaw/openclaw" target="_blank">OpenClaw — 私人AI助手</a></div><div class="card-desc">10万+⭐ 2天破10万Star，GitHub史上增长最快项目，多平台AI助手</div><div class="card-meta"><span>openclaw</span><span>100k+ ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">📈 增长</span><div class="card-title"><a href="https://github.com/alibaba/zvec" target="_blank">zvec — 阿里轻量级向量数据库</a></div><div class="card-desc">4895⭐ C++进程内闪电检索，为AI应用提供高性能数据支撑，日增502⭐</div><div class="card-meta"><span>Alibaba</span><span>4.9k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">📈 增长</span><div class="card-title"><a href="https://github.com/p-e-w/heretic" target="_blank">Heretic — 大模型自动审查规避工具</a></div><div class="card-desc">8010⭐ Python实现无需复杂过滤即可安全生成内容，日增946⭐</div><div class="card-meta"><span>p-e-w</span><span>8k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">📱 移动端</span><div class="card-title"><a href="https://github.com/google-ai-edge/gallery" target="_blank">AI Edge Gallery — 移动端本地运行大模型</a></div><div class="card-desc">1.8万⭐ Google开源，无需网络即可在手机运行Gemma等开源模型</div><div class="card-meta"><span>Google</span><span>18k ⭐</span></div></div>
+</div>
+</div>
+
+<!-- ==================== EVENTS ==================== -->
+<div class="panel" id="panel-events">
+<div class="sec-title"><span class="icon">📅</span> AI活动日历</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px">
+<div class="event-item"><div class="event-date"><div class="month">APR</div><div class="day">23</div></div><div class="event-detail"><h4><a href="https://iclr.cc/Conferences/2026" target="_blank">ICLR 2026</a></h4><p>国际学习表征会议，5000+论文，覆盖LLM、扩散生成、强化学习等前沿方向</p><div class="loc">📍 巴西 · 4月23-27日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">MAY</div><div class="day">22</div></div><div class="event-detail"><h4><a href="https://sacc.it168.com/" target="_blank">SACC2026 中国系统架构师大会·北京站</a></h4><p>ITPUB主办，聚焦系统架构、AI基础设施等核心议题</p><div class="loc">📍 北京 · 5月22-23日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">MAY</div><div class="day">29</div></div><div class="event-detail"><h4>AIDF 2026 大数据·AI·数字经济国际会议</h4><p>ACM ICPS出版，EI/SCOPUS检索</p><div class="loc">📍 武汉 · 5月29-31日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">JUN</div><div class="day">01</div></div><div class="event-detail"><h4><a href="https://www.nvidia.cn/events/computex/" target="_blank">NVIDIA GTC 台北</a></h4><p>黄仁勋主题演讲，物理AI、AI计算、基础设施最新突破</p><div class="loc">📍 台北 · 6月1-5日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">JUN</div><div class="day">26</div></div><div class="event-detail"><h4>AITC2026 中国人工智能技术峰会</h4><p>ITPUB年度AI技术盛会</p><div class="loc">📍 待定 · 6月26日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">AUG</div><div class="day">20</div></div><div class="event-detail"><h4>DTCC2026 中国数据库技术大会</h4><p>数据库+AI融合技术年度盛会</p><div class="loc">📍 待定 · 8月20-22日</div></div></div>
+<div class="event-item"><div class="event-date"><div class="month">DEC</div><div class="day">09</div></div><div class="event-detail"><h4>2026上海国际人工智能展览会 (AIE)</h4><p>年度AI产业展览盛会</p><div class="loc">📍 上海新国际博览中心 · 12月9-11日</div></div></div>
+</div>
+</div>
+
+<!-- ==================== LEARN ==================== -->
+<div class="panel" id="panel-learn">
+<div class="sec-title"><span class="icon">📚</span> AI学习资源</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="learn-course">课程</button>
+<button class="sub-btn" data-sub="learn-book">书籍</button>
+<button class="sub-btn" data-sub="learn-tutorial">教程</button>
+</div>
+<div class="grid" id="learn-course">
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://www.coursera.org/specializations/deep-learning" target="_blank">Andrew Ng — 深度学习专项课程</a></div><div class="card-desc">Coursera经典，5门课程从基础到实战，全球超百万人学习</div><div class="card-meta"><span>Coursera</span><span>免费旁听</span></div></div>
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://stanford.edu/~shervine/teaching/cs-229/" target="_blank">Stanford CS229 — 机器学习</a></div><div class="card-desc">斯坦福经典课程，吴恩达主讲，机器学习入门必学</div><div class="card-meta"><span>Stanford</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://huggingface.co/learn" target="_blank">HuggingFace NLP Course</a></div><div class="card-desc">从零学习NLP和Transformer，动手实践，免费开源</div><div class="card-meta"><span>HuggingFace</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://www.fast.ai" target="_blank">fast.ai — 实用深度学习</a></div><div class="card-desc">自顶向下的深度学习课程，先实战再理论，适合开发者</div><div class="card-meta"><span>fast.ai</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://www.deeplearning.ai/short-courses/" target="_blank">DeepLearning.AI 短课程</a></div><div class="card-desc">AI前沿短课程，ChatGPT Prompt、LangChain、RAG等热门主题</div><div class="card-meta"><span>DeepLearning.AI</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">课程</span><div class="card-title"><a href="https://karpathy.ai/zero-to-hero/" target="_blank">Karpathy — 神经网络从零到英雄</a></div><div class="card-desc">Andrej Karpathy手把手教你从零构建GPT，YouTube百万播放</div><div class="card-meta"><span>YouTube</span><span>免费</span></div></div>
+</div>
+<div class="grid" id="learn-book" style="display:none">
+<div class="card"><span class="card-tag learn">书籍</span><div class="card-title"><a href="https://d2l.ai" target="_blank">动手学深度学习 (Dive into DL)</a></div><div class="card-desc">李沐等著，交互式学习，代码+理论并行，中文版免费在线</div><div class="card-meta"><span>李沐</span><span>免费在线</span></div></div>
+<div class="card"><span class="card-tag learn">书籍</span><div class="card-title">Attention Is All You Need — Transformer原始论文</div><div class="card-desc">2017年开创性论文，理解现代AI基石的必读文献</div><div class="card-meta"><span>Google Brain</span><span>arXiv免费</span></div></div>
+<div class="card"><span class="card-tag learn">书籍</span><div class="card-title"><a href="https://github.com/datawhalechina/llm-cookbook" target="_blank">LLM Cookbook — 大模型实战指南</a></div><div class="card-desc">Datawhale出品，从API调用到模型微调的全流程实战教程</div><div class="card-meta"><span>Datawhale</span><span>开源免费</span></div></div>
+</div>
+<div class="grid" id="learn-tutorial" style="display:none">
+<div class="card"><span class="card-tag learn">教程</span><div class="card-title"><a href="https://python.langchain.com/docs/get_started" target="_blank">LangChain 官方教程</a></div><div class="card-desc">构建LLM应用的标准框架，从Quickstart到高级Agent</div><div class="card-meta"><span>LangChain</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">教程</span><div class="card-title"><a href="https://docs.llamaindex.ai/en/stable/" target="_blank">LlamaIndex 官方文档</a></div><div class="card-desc">数据框架，让LLM连接私有数据，RAG应用必备</div><div class="card-meta"><span>LlamaIndex</span><span>免费</span></div></div>
+<div class="card"><span class="card-tag learn">教程</span><div class="card-title"><a href="https://github.com/openai/openai-cookbook" target="_blank">OpenAI Cookbook</a></div><div class="card-desc">OpenAI官方示例集，API使用最佳实践和常见模式</div><div class="card-meta"><span>OpenAI</span><span>开源</span></div></div>
+</div>
+</div>
+
+<!-- ==================== MARKET ==================== -->
+<div class="panel" id="panel-market">
+<div class="sec-title"><span class="icon">📊</span> 市场数据</div>
+<div class="data-grid">
+<div class="data-card"><div class="data-label">2025全球AI投资</div><div class="data-value">$5817亿</div><div class="data-change up">↑ 130% YoY</div></div>
+<div class="data-card"><div class="data-label">AI Agent市场(2026)</div><div class="data-value">¥480亿</div><div class="data-change up">↑ 新兴赛道</div></div>
+<div class="data-card"><div class="data-label">人形机器人市场(2026)</div><div class="data-value">¥500亿</div><div class="data-change up">↑ 政策驱动</div></div>
+<div class="data-card"><div class="data-label">H100 GPU租赁价</div><div class="data-value">$2.35/h</div><div class="data-change down">↑ 40% 涨幅</div></div>
+<div class="data-card"><div class="data-label">Anthropic年化收入</div><div class="data-value">$300亿</div><div class="data-change up">↑ 19x 增长</div></div>
+<div class="data-card"><div class="data-label">华为昇腾国内份额</div><div class="data-value">20%</div><div class="data-change up">↑ 持续提升</div></div>
+<div class="data-card"><div class="data-label">OpenAI融资总额</div><div class="data-value">$1220亿</div><div class="data-change up">↑ 历史最高</div></div>
+<div class="data-card"><div class="data-label">人形机器人市场(2035)</div><div class="data-value">¥1万亿</div><div class="data-change up">↑ 长期展望</div></div>
+</div>
+<div class="grid">
+<div class="card"><span class="card-tag market">市场</span><div class="card-title">2025全球AI投资同比增130%</div><div class="card-desc">斯坦福AI指数报告：2025年全球AI投资5817亿美元，大模型、Agent、机器人三大赛道领跑</div><div class="card-meta"><span>Stanford HAI</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag market">市场</span><div class="card-title">AMD连涨12天，AI芯片竞争白热化</div><div class="card-desc">AMD MI400系列获大客户订单，AI芯片市场进入多强格局</div><div class="card-meta"><span>Reuters</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag market">市场</span><div class="card-title">Cerebras上市估值超50亿美元</div><div class="card-desc">晶圆级AI芯片挑战NVIDIA，AI芯片赛道竞争持续升温</div><div class="card-meta"><span>Bloomberg</span><span>2026-04</span></div></div>
+</div>
+</div>
+
+<!-- ==================== COMMUNITY ==================== -->
+<div class="panel" id="panel-community">
+<div class="sec-title"><span class="icon">💬</span> 社区热帖</div>
+<div class="grid">
+<div class="card"><span class="card-tag community">知乎</span><div class="card-title"><a href="https://www.zhihu.com/search?type=content&q=AI+2026" target="_blank">如何评价Anthropic收入反超OpenAI？</a></div><div class="card-desc">19倍增长背后的商业模式之争，Claude vs ChatGPT用户留存数据深度分析</div><div class="card-meta"><span>知乎热榜</span><span>2.4万讨论</span></div></div>
+<div class="card"><span class="card-tag community">Reddit</span><div class="card-title"><a href="https://www.reddit.com/r/artificial/" target="_blank">r/artificial — EU AI Act全面生效的影响</a></div><div class="card-desc">开发者社区讨论欧盟AI法案对开源模型和初创公司的实际影响</div><div class="card-meta"><span>Reddit</span><span>1.2k upvotes</span></div></div>
+<div class="card"><span class="card-tag community">HackerNews</span><div class="card-title"><a href="https://news.ycombinator.com/" target="_blank">OpenClaw 2天10万Star的启示</a></div><div class="card-desc">HN社区热议：开源AI助手为何爆发？本地化AI vs 云端AI的路线之争</div><div class="card-meta"><span>HackerNews</span><span>847 points</span></div></div>
+<div class="card"><span class="card-tag community">V2EX</span><div class="card-title"><a href="https://www.v2ex.com/?tab=tech" target="_blank">国产AI芯片替代进程加速讨论</a></div><div class="card-desc">华为昇腾份额突破20%，开发者分享国产AI芯片实际使用体验</div><div class="card-meta"><span>V2EX</span><span>技术讨论</span></div></div>
+<div class="card"><span class="card-tag community">Twitter/X</span><div class="card-title"><a href="https://x.com/search?q=AI" target="_blank">Karpathy：AI编程的下一个范式</a></div><div class="card-desc">Andrej Karpathy发推讨论AI辅助编程的未来，引发社区广泛讨论</div><div class="card-meta"><span>Twitter/X</span><span>15k likes</span></div></div>
+</div>
+</div>
+
+<!-- ==================== ART ==================== -->
+<div class="panel" id="panel-art">
+<div class="sec-title"><span class="icon">🎨</span> AI艺术展示</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px">
+<div style="text-align:center;padding:40px 0;color:var(--muted)">
+<div style="font-size:48px;margin-bottom:12px">🎨</div>
+<p style="font-size:15px;font-weight:500;margin-bottom:8px">AI艺术展厅</p>
+<p style="font-size:13px">展示社区精选AI生成作品</p>
+<p style="font-size:12px;margin-top:12px;color:var(--accent)">投稿：121803909@qq.com</p>
+</div>
+</div>
+<div class="grid">
+<div class="card"><span class="card-tag art">Midjourney</span><div class="card-title">赛博都市黄昏</div><div class="card-desc">霓虹灯光与雨水交织的未来城市场景，Midjourney v7生成</div><div class="card-meta"><span>投稿：@cyber_art</span><span>AI生成</span></div></div>
+<div class="card"><span class="card-tag art">Stable Diffusion</span><div class="card-title">机械花园</div><div class="card-desc">自然与机械融合的超现实花园，ControlNet精确构图</div><div class="card-meta"><span>投稿：@mech_garden</span><span>AI生成</span></div></div>
+<div class="card"><span class="card-tag art">DALL·E</span><div class="card-title">量子梦境</div><div class="card-desc">抽象量子世界可视化，粒子与波函数的艺术表达</div><div class="card-meta"><span>投稿：@quantum_dream</span><span>AI生成</span></div></div>
+</div>
+</div>
+
+<!-- ==================== JOBS ==================== -->
+<div class="panel" id="panel-jobs">
+<div class="sec-title"><span class="icon">💼</span> AI招聘信息</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="job-card"><h4>大模型算法工程师</h4><div class="company">字节跳动 · 北京</div><div class="info">💰 50-100K/月 · 3-5年经验 · 负责大模型训练与推理优化</div></div>
+<div class="job-card"><h4>AI Agent开发工程师</h4><div class="company">腾讯 · 深圳</div><div class="info">💰 40-80K/月 · 2-4年经验 · LangChain/LLM应用开发</div></div>
+<div class="job-card"><h4>机器人运动控制算法</h4><div class="company">优必选 · 深圳</div><div class="info">💰 35-70K/月 · 3-5年经验 · 人形机器人运动规划与控制</div></div>
+<div class="job-card"><h4>AI芯片编译器工程师</h4><div class="company">华为 · 上海</div><div class="info">💰 45-90K/月 · 3-5年经验 · 昇腾AI芯片编译优化</div></div>
+<div class="job-card"><h4>AIGC产品经理</h4><div class="company">阿里巴巴 · 杭州</div><div class="info">💰 35-60K/月 · 2-4年经验 · AI生成内容产品规划与落地</div></div>
+<div class="job-card"><h4>LLM推理优化工程师</h4><div class="company">百度 · 北京</div><div class="info">💰 40-80K/月 · 3-5年经验 · 大模型推理加速与部署</div></div>
+</div>
+</div>
+
+</div><!-- end main -->
+
+<!-- Pixel Cat -->
+<div class="cat-wrap" id="catBtn" title="点击留言">
+<svg class="cat-body" viewBox="0 0 40 40" width="40" height="40">
+<rect x="8" y="14" width="24" height="18" rx="4" fill="#6366f1"/>
+<polygon points="8,14 12,4 18,14" fill="#6366f1"/>
+<polygon points="22,14 28,4 32,14" fill="#6366f1"/>
+<polygon points="12,6 14,14 10,14" fill="#818cf8"/>
+<polygon points="26,6 28,14 24,14" fill="#818cf8"/>
+<circle cx="15" cy="21" r="2.5" fill="#fff"/>
+<circle cx="25" cy="21" r="2.5" fill="#fff"/>
+<circle cx="15" cy="21" r="1.2" fill="#1e1b4b"/>
+<circle cx="25" cy="21" r="1.2" fill="#1e1b4b"/>
+<ellipse cx="20" cy="26" rx="2" ry="1.5" fill="#c7d2fe"/>
+</svg>
+</div>
+<div class="cat-dialog" id="catDialog">
+<h4>🐱 给我留言</h4>
+<input type="text" id="catName" placeholder="你的名字">
+<textarea id="catMsg" placeholder="说点什么..."></textarea>
+<button onclick="sendCatMsg()">发送</button>
+<p style="font-size:11px;color:var(--muted);margin-top:8px">留言将发送至 121803909@qq.com</p>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+KATANAAI LAB © 2026 · AI · TECH · FUTURE · <a href="https://github.com/121803909/ai-hub" target="_blank">GitHub</a>
+</div>
+
+<script>
+// Date
+document.getElementById('dateDisplay').textContent=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+
+// Nav tabs
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Sub tabs
+document.querySelectorAll('.sub-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const parent=btn.parentElement;
+    parent.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const sub=btn.dataset.sub;
+    // Find sibling grids
+    let el=parent.nextElementSibling;
+    while(el&&!el.classList.contains('sub-tabs')&&el.tagName!=='H2'){
+      if(el.classList.contains('grid')||el.classList.contains('tool-grid')){
+        el.style.display='none';
+      }
+      el=el.nextElementSibling;
+    }
+    const target=document.getElementById(sub);
+    if(target)target.style.display='';
+  });
+});
+
+// Cat dialog
+document.getElementById('catBtn').addEventListener('click',()=>{
+  document.getElementById('catDialog').classList.toggle('show');
+});
+function sendCatMsg(){
+  const name=document.getElementById('catName').value||'匿名';
+  const msg=document.getElementById('catMsg').value;
+  if(!msg){alert('请输入留言内容');return;}
+  const subject=encodeURIComponent('KATANAAI LAB 留言 - '+name);
+  const body=encodeURIComponent('来自: '+name+'\n\n'+msg);
+  window.open('mailto:121803909@qq.com?subject='+subject+'&body='+body);
+  document.getElementById('catDialog').classList.remove('show');
+  document.getElementById('catMsg').value='';
+}
+</script>
+</body>
+</html>
