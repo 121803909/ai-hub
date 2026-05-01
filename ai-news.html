@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KATANAAI LAB — AI创作资讯站</title>
+<style>
+:root{--bg:#0a0a0f;--card:#13131a;--accent:#00d4ff;--accent2:#a855f7;--accent3:#f43f5e;--text:#e5e7eb;--muted:#6b7280;--border:#1e1e2e;--shadow:0 2px 12px rgba(0,212,255,.08);--radius:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--accent);text-decoration:none;transition:.2s}
+a:hover{color:#fff;text-shadow:0 0 8px var(--accent)}
+
+/* Header */
+.header{background:linear-gradient(180deg,#0f0f18 0%,var(--bg) 100%);border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{font-size:11px;color:var(--muted);letter-spacing:2px;margin-top:2px}
+
+/* Nav */
+.nav{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:99;overflow-x:auto}
+.nav::-webkit-scrollbar{display:none}
+.nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;gap:0}
+.nav-btn{padding:14px 22px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.25s;white-space:nowrap}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);text-shadow:0 0 6px rgba(0,212,255,.3)}
+
+/* Main */
+.main{max-width:1280px;margin:0 auto;padding:24px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Section Title */
+.sec-title{font-size:20px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.sec-title .icon{font-size:22px}
+.sec-title .glow{color:var(--accent);text-shadow:0 0 12px rgba(0,212,255,.4)}
+
+/* Sub-tabs */
+.sub-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.sub-btn{padding:7px 16px;font-size:12px;font-weight:600;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:.25s}
+.sub-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sub-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(0,212,255,.2)}
+
+/* Cards Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-bottom:32px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:.3s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:.3s}
+.card:hover{border-color:rgba(0,212,255,.3);box-shadow:0 4px 20px rgba(0,212,255,.08);transform:translateY(-2px)}
+.card:hover::before{opacity:1}
+.card-tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;margin-bottom:10px;letter-spacing:.5px}
+.card-tag.music{background:linear-gradient(135deg,#1e1b4b,#312e81);color:#a78bfa}
+.card-tag.video{background:linear-gradient(135deg,#0c1a2e,#1e3a5f);color:#60a5fa}
+.card-tag.image{background:linear-gradient(135deg,#1a1a2e,#2d1b69);color:#c084fc}
+.card-tag.film{background:linear-gradient(135deg,#2a1a1a,#4a1d1d);color:#f87171}
+.card-tag.model{background:linear-gradient(135deg,#1e1b4b,#312e81);color:#a78bfa}
+.card-tag.chip{background:linear-gradient(135deg,#0c1a2e,#1e3a5f);color:#60a5fa}
+.card-tag.robot{background:linear-gradient(135deg,#0a1e1a,#0d3d2e);color:#34d399}
+.card-tag.finance{background:linear-gradient(135deg,#1e1a0a,#3d2e0d);color:#fbbf24}
+.card-tag.policy{background:linear-gradient(135deg,#1e0a1a,#3d0d2e);color:#f472b6}
+.card-tag.opensource{background:linear-gradient(135deg,#0a1e0a,#0d3d0d);color:#4ade80}
+.card-tag.market{background:linear-gradient(135deg,#1e1a0a,#3d2e0d);color:#fb923c}
+.card-tag.tool-tag{background:linear-gradient(135deg,#0c1a2e,#1e3a5f);color:#38bdf8}
+.card-title{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.5}
+.card-title a{color:var(--text)}
+.card-title a:hover{color:var(--accent)}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{font-size:11px;color:#4b5563;display:flex;gap:12px}
+
+/* Tool Grid */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:32px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;transition:.3s;cursor:pointer}
+.tool-card:hover{border-color:rgba(0,212,255,.3);box-shadow:0 2px 12px rgba(0,212,255,.1);transform:translateY(-2px)}
+.tool-icon{font-size:30px;margin-bottom:8px}
+.tool-name{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text)}
+.tool-desc{font-size:11px;color:var(--muted)}
+
+/* Data Grid */
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:32px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.data-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.data-value{font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.data-change{font-size:12px;font-weight:600}
+.data-change.up{color:#34d399}
+.data-change.down{color:#f87171}
+
+/* Footer */
+.footer{text-align:center;padding:40px 24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+.footer a{color:var(--accent)}
+
+/* Pixel Cat */
+.cat-wrap{position:fixed;right:20px;bottom:20px;z-index:200;cursor:pointer}
+.cat-wrap:hover .cat-body{transform:scale(1.1)}
+.cat-body{width:40px;height:40px;transition:.2s}
+.cat-dialog{position:fixed;right:70px;bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;z-index:201}
+.cat-dialog.show{display:block}
+.cat-dialog h4{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text)}
+.cat-dialog input,.cat-dialog textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:13px;margin-bottom:8px;font-family:inherit;resize:vertical;background:var(--bg);color:var(--text)}
+.cat-dialog textarea{height:60px}
+.cat-dialog button{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;font-weight:600}
+.cat-dialog button:hover{opacity:.9}
+
+/* Responsive */
+@media(max-width:768px){.grid{grid-template-columns:1fr}.tool-grid{grid-template-columns:repeat(2,1fr)}.data-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+<div class="header-inner">
+<div>
+<div class="logo">KATANAAI LAB</div>
+<div class="tagline">AI · CREATE · FUTURE</div>
+</div>
+<div style="font-size:12px;color:var(--muted)" id="dateDisplay"></div>
+</div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+<div class="nav-inner" id="navBar">
+<button class="nav-btn active" data-tab="music">🎵 AI音乐</button>
+<button class="nav-btn" data-tab="video">🎬 AI视频</button>
+<button class="nav-btn" data-tab="image">🖼️ AI图片</button>
+<button class="nav-btn" data-tab="film">🎞️ AI短片</button>
+<button class="nav-btn" data-tab="news">📰 资讯</button>
+<button class="nav-btn" data-tab="tools">🔧 工具</button>
+<button class="nav-btn" data-tab="opensource">⭐ 开源</button>
+<button class="nav-btn" data-tab="market">📊 数据</button>
+</div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- ==================== AI MUSIC ==================== -->
+<div class="panel active" id="panel-music">
+<div class="sec-title"><span class="icon">🎵</span> <span class="glow">AI音乐</span> · 热门创作</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="music-hot">🔥 热门</button>
+<button class="sub-btn" data-sub="music-suno">Suno</button>
+<button class="sub-btn" data-sub="music-udio">Udio</button>
+<button class="sub-btn" data-sub="music-other">更多平台</button>
+</div>
+
+<div class="grid" id="music-hot">
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://suno.com" target="_blank">Suno V4.5 全新升级：支持多语言歌词生成</a></div><div class="card-desc">Suno发布V4.5版本，支持中英日韩等多语言歌词自动生成，音质与人声自然度大幅提升</div><div class="card-meta"><span>Suno</span><span>2026-04-27</span></div></div>
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://www.udio.com" target="_blank">Udio 推出实时协作创作功能</a></div><div class="card-desc">Udio上线多人实时协作功能，多位创作者可同时编辑同一首AI音乐作品</div><div class="card-meta"><span>Udio</span><span>2026-04-25</span></div></div>
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E9%9F%B3%E4%B9%90" target="_blank">B站AI音乐创作区播放量突破10亿</a></div><div class="card-desc">B站AI音乐分区创作者数量同比增长300%，AI翻唱与原创AI歌曲成为新潮流</div><div class="card-meta"><span>B站</span><span>2026-04-26</span></div></div>
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://www.douyin.com/search/AI%E9%9F%B3%E4%B9%90" target="_blank">抖音AI音乐挑战赛引爆全网</a></div><div class="card-desc">抖音#AIMusicChallenge挑战赛参与人次超500万，AI生成的洗脑神曲刷屏</div><div class="card-meta"><span>抖音</span><span>2026-04-24</span></div></div>
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c001904rxxx.html" target="_blank">腾讯AI音乐工作室上线，一键生成完整歌曲</a></div><div class="card-desc">腾讯推出AI音乐创作工作室，支持从歌词到编曲到混音的全流程AI生成</div><div class="card-meta"><span>新浪科技</span><span>2026-04-23</span></div></div>
+<div class="card"><span class="card-tag music">AI音乐</span><div class="card-title"><a href="https://music.163.com/#/search/m/?s=AI" target="_blank">网易云音乐上线AI音乐专区</a></div><div class="card-desc">网易云音乐正式上线AI音乐专区，收录超50万首AI创作音乐作品</div><div class="card-meta"><span>网易云音乐</span><span>2026-04-22</span></div></div>
+</div>
+
+<div class="grid" id="music-suno" style="display:none">
+<div class="card"><span class="card-tag music">Suno</span><div class="card-title"><a href="https://suno.com" target="_blank">Suno — AI音乐创作平台</a></div><div class="card-desc">全球最流行的AI音乐生成平台，支持文本描述生成完整歌曲，V4.5版本音质大幅提升</div><div class="card-meta"><span>suno.com</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag music">Suno</span><div class="card-title"><a href="https://suno.com/blog" target="_blank">Suno官方博客：最新功能与创作技巧</a></div><div class="card-desc">Suno官方发布创作教程与最佳实践，教你如何用提示词生成高质量AI音乐</div><div class="card-meta"><span>Suno Blog</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag music">Suno</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=Suno%E6%95%99%E7%A8%8B" target="_blank">B站Suno教程合集：从入门到精通</a></div><div class="card-desc">精选B站Suno AI音乐创作教程，涵盖基础操作、进阶技巧、风格调教等</div><div class="card-meta"><span>B站</span><span>合集</span></div></div>
+</div>
+
+<div class="grid" id="music-udio" style="display:none">
+<div class="card"><span class="card-tag music">Udio</span><div class="card-title"><a href="https://www.udio.com" target="_blank">Udio — 高品质AI音乐生成</a></div><div class="card-desc">以音质著称的AI音乐平台，擅长生成复杂编曲和多层次音乐作品</div><div class="card-meta"><span>udio.com</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag music">Udio</span><div class="card-title"><a href="https://www.udio.com/blog" target="_blank">Udio新功能：AI音乐Remix与变奏</a></div><div class="card-desc">Udio上线Remix功能，支持对已有AI音乐作品进行风格变换与旋律变奏</div><div class="card-meta"><span>Udio Blog</span><span>2026-04</span></div></div>
+</div>
+
+<div class="grid" id="music-other" style="display:none">
+<div class="card"><span class="card-tag music">更多</span><div class="card-title"><a href="https://www.stableaudio.com" target="_blank">Stable Audio — Stability AI音乐生成</a></div><div class="card-desc">Stability AI旗下音乐生成平台，支持长音频生成与专业级音质输出</div><div class="card-meta"><span>Stable Audio</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag music">更多</span><div class="card-title"><a href="https://aivoice.microsoft.com" target="_blank">微软AI语音 — 音乐人声合成</a></div><div class="card-desc">微软AI语音技术应用于音乐人声合成，可克隆歌手音色进行翻唱与创作</div><div class="card-meta"><span>Microsoft</span><span>2026</span></div></div>
+<div class="card"><span class="card-tag music">更多</span><div class="card-title"><a href="https://tongyi.aliyun.com/music" target="_blank">通义千问音乐 — 阿里AI作曲</a></div><div class="card-desc">阿里通义千问音乐创作功能，支持中文歌词自动配曲与编曲生成</div><div class="card-meta"><span>阿里</span><span>2026</span></div></div>
+</div>
+</div>
+
+<!-- ==================== AI VIDEO ==================== -->
+<div class="panel" id="panel-video">
+<div class="sec-title"><span class="icon">🎬</span> <span class="glow">AI视频</span> · 创作前沿</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="video-hot">🔥 热门</button>
+<button class="sub-btn" data-sub="video-sora">Sora</button>
+<button class="sub-btn" data-sub="video-kling">可灵</button>
+<button class="sub-btn" data-sub="video-other">更多平台</button>
+</div>
+
+<div class="grid" id="video-hot">
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://sora.com" target="_blank">Sora正式开放API，视频生成进入2分钟时代</a></div><div class="card-desc">OpenAI正式开放Sora API，支持生成长达2分钟的高清视频，创作者生态全面爆发</div><div class="card-meta"><span>OpenAI</span><span>2026-04-25</span></div></div>
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://kling.kuaishou.com" target="_blank">可灵2.0发布：支持4K超清视频生成</a></div><div class="card-desc">快手可灵AI发布2.0版本，支持4K分辨率视频生成与精确的运动控制</div><div class="card-meta"><span>快手</span><span>2026-04-24</span></div></div>
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://hailuoai.video" target="_blank">海螺AI视频生成量突破1亿条</a></div><div class="card-desc">MiniMax旗下海螺AI视频生成总量突破1亿条，成为全球增速最快的AI视频平台</div><div class="card-meta"><span>MiniMax</span><span>2026-04-23</span></div></div>
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E8%A7%86%E9%A2%91" target="_blank">B站AI视频创作大赛获奖名单公布</a></div><div class="card-desc">B站首届AI视频创作大赛揭晓，获奖作品涵盖科幻短片、MV、动画等多种类型</div><div class="card-meta"><span>B站</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://runway.ml" target="_blank">Runway Gen-4发布：电影级AI视频生成</a></div><div class="card-desc">Runway发布Gen-4模型，支持电影级画质、角色一致性与场景连贯性</div><div class="card-meta"><span>Runway</span><span>2026-04-20</span></div></div>
+<div class="card"><span class="card-tag video">AI视频</span><div class="card-title"><a href="https://www.douyin.com/search/AI%E8%A7%86%E9%A2%91" target="_blank">抖音AI视频创作工具全面升级</a></div><div class="card-desc">抖音上线AI视频创作工具2.0，支持一键生成特效视频与智能剪辑</div><div class="card-meta"><span>抖音</span><span>2026-04-21</span></div></div>
+</div>
+
+<div class="grid" id="video-sora" style="display:none">
+<div class="card"><span class="card-tag video">Sora</span><div class="card-title"><a href="https://sora.com" target="_blank">Sora — OpenAI视频生成平台</a></div><div class="card-desc">OpenAI旗舰视频生成产品，支持文本/图片生成高质量视频，API已全面开放</div><div class="card-meta"><span>OpenAI</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag video">Sora</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=Sora%E6%95%99%E7%A8%8B" target="_blank">B站Sora教程：从零开始学AI视频</a></div><div class="card-desc">精选Sora视频生成教程，涵盖提示词技巧、运动控制、场景设计等</div><div class="card-meta"><span>B站</span><span>合集</span></div></div>
+</div>
+
+<div class="grid" id="video-kling" style="display:none">
+<div class="card"><span class="card-tag video">可灵</span><div class="card-title"><a href="https://kling.kuaishou.com" target="_blank">可灵AI — 快手视频生成</a></div><div class="card-desc">快手旗下AI视频生成平台，2.0版本支持4K输出与精确运动控制，国内领先</div><div class="card-meta"><span>快手</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag video">可灵</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=%E5%8F%AF%E7%81%B5AI%E6%95%99%E7%A8%8B" target="_blank">可灵AI教程与创作技巧</a></div><div class="card-desc">可灵AI视频生成教程合集，从基础操作到高级特效制作</div><div class="card-meta"><span>B站</span><span>合集</span></div></div>
+</div>
+
+<div class="grid" id="video-other" style="display:none">
+<div class="card"><span class="card-tag video">更多</span><div class="card-title"><a href="https://pika.art" target="_blank">Pika — AI视频生成</a></div><div class="card-desc">Pika AI视频生成平台，擅长特效视频与风格化视频创作</div><div class="card-meta"><span>Pika</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag video">更多</span><div class="card-title"><a href="https://vidu.studio" target="_blank">Vidu — 生数科技AI视频</a></div><div class="card-desc">生数科技旗下AI视频生成平台，支持长视频生成与风格迁移</div><div class="card-meta"><span>生数科技</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag video">更多</span><div class="card-title"><a href="https://jimeng.jianying.com" target="_blank">即梦AI — 字节跳动视频生成</a></div><div class="card-desc">字节跳动旗下AI视频生成工具，与剪映深度集成</div><div class="card-meta"><span>字节跳动</span><span>持续更新</span></div></div>
+</div>
+</div>
+
+<!-- ==================== AI IMAGE ==================== -->
+<div class="panel" id="panel-image">
+<div class="sec-title"><span class="icon">🖼️</span> <span class="glow">AI图片</span> · 创意画廊</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="image-hot">🔥 热门</button>
+<button class="sub-btn" data-sub="image-mj">Midjourney</button>
+<button class="sub-btn" data-sub="image-sd">Stable Diffusion</button>
+<button class="sub-btn" data-sub="image-other">更多平台</button>
+</div>
+
+<div class="grid" id="image-hot">
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://midjourney.com" target="_blank">Midjourney V7发布：照片级真实感再突破</a></div><div class="card-desc">Midjourney发布V7版本，在人物细节、光影效果、文字渲染方面实现重大飞跃</div><div class="card-meta"><span>Midjourney</span><span>2026-04-26</span></div></div>
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://stability.ai" target="_blank">Stable Diffusion 4.0开源发布</a></div><div class="card-desc">Stability AI发布SD4.0，完全开源，支持本地部署，生成质量比肩闭源模型</div><div class="card-meta"><span>Stability AI</span><span>2026-04-25</span></div></div>
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://www.liblib.art" target="_blank">LibLib模型社区下载量突破5亿</a></div><div class="card-desc">国内最大AI绘画模型社区LibLib下载量突破5亿次，模型数量超10万个</div><div class="card-meta"><span>LibLib</span><span>2026-04-24</span></div></div>
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%BB%98%E7%94%BB" target="_blank">B站AI绘画教程播放量破5亿</a></div><div class="card-desc">AI绘画教程持续火爆，Stable Diffusion、ComfyUI等工具教程播放量创历史新高</div><div class="card-meta"><span>B站</span><span>2026-04-23</span></div></div>
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://www.seaart.ai" target="_blank">SeaArt上线AI图片编辑2.0</a></div><div class="card-desc">SeaArt发布AI图片编辑2.0，支持局部重绘、风格迁移、超分辨率等一键操作</div><div class="card-meta"><span>SeaArt</span><span>2026-04-22</span></div></div>
+<div class="card"><span class="card-tag image">AI图片</span><div class="card-title"><a href="https://yige.baidu.com" target="_blank">文心一格3.0：中文AI绘画最强</a></div><div class="card-desc">百度文心一格3.0发布，中文理解能力大幅提升，支持中文书法与国风水墨</div><div class="card-meta"><span>百度</span><span>2026-04-20</span></div></div>
+</div>
+
+<div class="grid" id="image-mj" style="display:none">
+<div class="card"><span class="card-tag image">Midjourney</span><div class="card-title"><a href="https://midjourney.com" target="_blank">Midjourney — AI绘画标杆</a></div><div class="card-desc">全球最知名的AI绘画平台，V7版本在真实感与艺术性上达到新高度</div><div class="card-meta"><span>midjourney.com</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag image">Midjourney</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=Midjourney%E6%95%99%E7%A8%8B" target="_blank">B站Midjourney教程精选</a></div><div class="card-desc">从入门提示词到高级风格控制的完整教程合集</div><div class="card-meta"><span>B站</span><span>合集</span></div></div>
+</div>
+
+<div class="grid" id="image-sd" style="display:none">
+<div class="card"><span class="card-tag image">SD</span><div class="card-title"><a href="https://stability.ai" target="_blank">Stable Diffusion 4.0 — 开源AI绘画</a></div><div class="card-desc">最新开源SD4.0模型，支持本地部署，完全免费，社区生态最丰富</div><div class="card-meta"><span>Stability AI</span><span>开源</span></div></div>
+<div class="card"><span class="card-tag image">SD</span><div class="card-title"><a href="https://github.com/comfyanonymous/ComfyUI" target="_blank">ComfyUI — 节点式SD工作流</a></div><div class="card-desc">最受欢迎的SD图形化界面，节点式工作流，灵活度极高，社区贡献大量节点</div><div class="card-meta"><span>GitHub</span><span>开源</span></div></div>
+<div class="card"><span class="card-tag image">SD</span><div class="card-title"><a href="https://civitai.com" target="_blank">CivitAI — SD模型与LoRA社区</a></div><div class="card-desc">全球最大的SD模型分享社区，海量LoRA、Checkpoint、工作流模板</div><div class="card-meta"><span>CivitAI</span><span>社区</span></div></div>
+</div>
+
+<div class="grid" id="image-other" style="display:none">
+<div class="card"><span class="card-tag image">更多</span><div class="card-title"><a href="https://dall-e" target="_blank">DALL·E 4 — OpenAI生图</a></div><div class="card-desc">OpenAI最新图像生成模型，与ChatGPT深度集成，文字渲染能力业界领先</div><div class="card-meta"><span>OpenAI</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag image">更多</span><div class="card-title"><a href="https://ideogram.ai" target="_blank">Ideogram — AI文字图像生成</a></div><div class="card-desc">以精准文字渲染著称的AI绘画平台，海报与Logo设计利器</div><div class="card-meta"><span>Ideogram</span><span>持续更新</span></div></div>
+<div class="card"><span class="card-tag image">更多</span><div class="card-title"><a href="https://www.flux1.ai" target="_blank">FLUX.1 — Black Forest Labs</a></div><div class="card-desc">Stable Diffusion原作者新公司出品，开源模型质量惊人</div><div class="card-meta"><span>Black Forest Labs</span><span>开源</span></div></div>
+</div>
+</div>
+
+<!-- ==================== AI SHORT FILM ==================== -->
+<div class="panel" id="panel-film">
+<div class="sec-title"><span class="icon">🎞️</span> <span class="glow">AI短片</span> · 展映厅</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="film-hot">🔥 热门</button>
+<button class="sub-btn" data-sub="film-award">🏆 获奖</button>
+<button class="sub-btn" data-sub="film-tutorial">🎬 制作幕后</button>
+</div>
+
+<div class="grid" id="film-hot">
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87+%E5%91%8A%E5%88%AB" target="_blank">《告别》AI短片全网播放破亿</a></div><div class="card-desc">南京传媒学院毕业生使用商汤Seko制作的AI短片，入围北影节AIGC竞赛单元，情感共鸣引爆全网</div><div class="card-meta"><span>商汤Seko</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87+%E7%89%8C%E5%AD%90" target="_blank">《牌子》AI动画短片播放1865万</a></div><div class="card-desc">DiDi_OK创作的AI生成动画短片，在B站引发AI动画创作热潮</div><div class="card-meta"><span>B站</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://www.douyin.com/search/AI%E8%B4%BA%E5%B2%81%E5%89%A7" target="_blank">《马不停蹄》AI贺岁剧刷屏</a></div><div class="card-desc">抖音热门AI生成贺岁短剧，AI演员+AI场景，开创短剧新形态</div><div class="card-meta"><span>抖音</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AIGC%E7%94%B5%E5%BD%B1" target="_blank">北影节AIGC竞赛单元作品全览</a></div><div class="card-desc">北京国际电影节AIGC短片竞赛单元入围作品汇总，展示AI电影创作最高水平</div><div class="card-meta"><span>北影节</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%94%B5%E5%BD%B1+%E7%9F%AD%E7%89%87" target="_blank">Sora生成短片首次入围国际影展</a></div><div class="card-desc">首部由Sora完全生成的短片获得国际短片电影节提名，AI电影里程碑事件</div><div class="card-meta"><span>综合</span><span>2026-04</span></div></div>
+<div class="card"><span class="card-tag film">AI短片</span><div class="card-title"><a href="https://www.douyin.com/search/AI%E7%9F%AD%E5%89%A7" target="_blank">抖音AI短剧日产量突破1万部</a></div><div class="card-desc">抖音平台AI短剧创作者爆发式增长，日均AI短剧产量突破1万部</div><div class="card-meta"><span>抖音</span><span>2026-04</span></div></div>
+</div>
+
+<div class="grid" id="film-award" style="display:none">
+<div class="card"><span class="card-tag film">🏆</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AIGC%E7%94%B5%E5%BD%B1%E5%A5%96" target="_blank">2026 AIGC电影奖获奖名单</a></div><div class="card-desc">年度AIGC电影创作奖项评选，表彰最优秀的AI生成影视作品</div><div class="card-meta"><span>AIGC电影奖</span><span>2026</span></div></div>
+<div class="card"><span class="card-tag film">🏆</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87%E5%A4%A7%E8%B5%9B" target="_blank">AI短片创作大赛获奖作品集锦</a></div><div class="card-desc">各大平台AI短片创作大赛获奖作品合集，展现AI影视创作最新成果</div><div class="card-meta"><span>综合</span><span>2026</span></div></div>
+</div>
+
+<div class="grid" id="film-tutorial" style="display:none">
+<div class="card"><span class="card-tag film">🎬</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87%E5%88%B6%E4%BD%9C%E6%95%99%E7%A8%8B" target="_blank">从零制作AI短片全流程教程</a></div><div class="card-desc">详细教程：脚本AI生成 → AI分镜 → AI视频生成 → AI配音 → 剪辑合成</div><div class="card-meta"><span>B站</span><span>教程</span></div></div>
+<div class="card"><span class="card-tag film">🎬</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=Sora+%E5%88%B6%E4%BD%9C%E5%B9%95%E5%90%8E" target="_blank">Sora短片制作幕后揭秘</a></div><div class="card-desc">创作者分享Sora短片制作全过程，包括提示词设计与多镜头拼接技巧</div><div class="card-meta"><span>B站</span><span>幕后</span></div></div>
+<div class="card"><span class="card-tag film">🎬</span><div class="card-title"><a href="https://search.bilibili.com/all?keyword=AI%E7%94%B5%E5%BD%B1+ComfyUI" target="_blank">ComfyUI AI影视工作流搭建</a></div><div class="card-desc">使用ComfyUI搭建AI影视全流程工作流，从分镜到成片一站式搞定</div><div class="card-meta"><span>B站</span><span>教程</span></div></div>
+</div>
+</div>
+
+<!-- ==================== NEWS ==================== -->
+<div class="panel" id="panel-news">
+<div class="sec-title"><span class="icon">📰</span> AI资讯</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="news-model">大模型</button>
+<button class="sub-btn" data-sub="news-chip">芯片算力</button>
+<button class="sub-btn" data-sub="news-robot">机器人</button>
+<button class="sub-btn" data-sub="news-finance">投融资</button>
+<button class="sub-btn" data-sub="news-policy">监管政策</button>
+</div>
+
+<div class="grid" id="news-model">
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_17269f4840e88665" target="_blank">腾讯混元Hy3 preview开源，登顶全球大模型API调用榜</a></div><div class="card-desc">腾讯发布并开源混元Hy3 preview，支持256K上下文，在OpenRouter全球API调用量排名中位列第一，工具调用分类也排名第一</div><div class="card-meta"><span>企鹅号</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://blog.csdn.net/qq_41862844/article/details/160683417" target="_blank">Grok 4.3发布：500B参数，输入降价40%，性能超中国开源模型</a></div><div class="card-desc">xAI发布Grok 4.3，500B参数模型价格降低四成，实际表现超越部分更大的中国开源模型</div><div class="card-meta"><span>CSDN</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_01769f4873b54265" target="_blank">DeepSeek-V4系列开源：百万Token上下文，Agent能力达开源最佳</a></div><div class="card-desc">DeepSeek发布V4-Pro与V4-Flash，全系标配百万Token上下文，Agent能力评测达开源最佳，交付质量接近Claude Opus 4.6</div><div class="card-meta"><span>DeepSeek</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://www.toutiao.com/article/7634790709542830592/" target="_blank">中美大模型26Q2展望：Agent与多模态成最大看点</a></div><div class="card-desc">Coding和Agent成主战场，国产模型依托性价比扩大Token份额，5~6月为下一轮迭代窗口期，GPT-6、Kimi K3等值得期待</div><div class="card-meta"><span>今日头条</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_71469f0947617252" target="_blank">我国首个临近空间大模型"磐石·临空"发布</a></div><div class="card-desc">中国首个面向临近空间领域的学科知识大模型在北京发布，填补临近空间专业AI模型领域空白</div><div class="card-meta"><span>企鹅号</span><span>2026-04-28</span></div></div>
+<div class="card"><span class="card-tag model">大模型</span><div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c001904ybbw.html" target="_blank">OpenAI Codex大更新：普通人也能用AI做日常工作</a></div><div class="card-desc">OpenAI Codex重大升级，智能体编程工具代码比例从20%升至80%，从程序员专属变为任何使用电脑工作的人的工具</div><div class="card-meta"><span>新浪网</span><span>2026-05-01</span></div></div>
+</div>
+
+<div class="grid" id="news-chip" style="display:none">
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_67769f420ac57852" target="_blank">DeepSeek-V4押注国产芯片，华为昇腾性价比突出</a></div><div class="card-desc">DeepSeek-V4首次将华为昇腾与英伟达并列写入硬件验证清单，昇腾采购价仅英伟达1/4，单卡算力比特供版提升2.87倍</div><div class="card-meta"><span>企鹅号</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="https://www.donews.com/news/detail/8/6539417.html" target="_blank">摩尔线程完成DeepSeek-V4全链路工程化适配</a></div><div class="card-desc">摩尔线程基于MTT S5000智算卡及MUSA软件栈完成DeepSeek-V4全流程运行验证，国产GPU大模型生态兼容性取得重要进展</div><div class="card-meta"><span>DoNews</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag chip">芯片算力</span><div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c001904ybbw.html" target="_blank">NVIDIA B300服务器价格暴涨，较去年底近乎翻倍</a></div><div class="card-desc">AI算力需求持续攀升，NVIDIA B300服务器市场价格较去年底近乎翻倍，供需紧张加剧</div><div class="card-meta"><span>快科技</span><span>2026-05-01</span></div></div>
+</div>
+
+<div class="grid" id="news-robot" style="display:none">
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="http://finance.eastmoney.com/a/202605013727320022.html" target="_blank">美的工厂AI智能体实现秒级排产，效率提升80%</a></div><div class="card-desc">美的荆州洗衣机工厂搭载AI智能体，排产调整从数小时缩短至秒级响应，整体效率提升80%</div><div class="card-meta"><span>东方财富网</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="https://news.sina.cn/bignews/insight/2026-05-01/detail-inhwkyhy5422706.d.html" target="_blank">AI大模型批量上车，重塑汽车出行底层逻辑</a></div><div class="card-desc">AI大模型推动汽车从交通工具向数据驱动智能体转变，AEB刹停速度提至140km/h，舱驾一体芯片统一决策算力</div><div class="card-meta"><span>新浪新闻</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag robot">机器人</span><div class="card-title"><a href="https://blog.csdn.net/qq_41862844/article/details/160683417" target="_blank">Manus AI推出云端电脑：24小时运行AI代理</a></div><div class="card-desc">Manus AI发布Cloud Computer服务，AI代理可在云端电脑上7×24小时自主运行完成任务</div><div class="card-meta"><span>CSDN</span><span>2026-05-01</span></div></div>
+</div>
+
+<div class="grid" id="news-finance" style="display:none">
+<div class="card"><span class="card-tag finance">投融资</span><div class="card-title"><a href="https://www.nbd.com.cn/columns/1367/" target="_blank">SpaceX 600亿美元拿下AI编程公司Cursor收购权</a></div><div class="card-desc">SpaceX以600亿美元收购AI编程工具Cursor，AI编程赛道估值飙升，引发行业震动</div><div class="card-meta"><span>每经网</span><span>2026-04-26</span></div></div>
+<div class="card"><span class="card-tag finance">投融资</span><div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_01869f37b4d04952" target="_blank">维信诺发布OLED垂域大模型"维擎"，全球首个</a></div><div class="card-desc">维信诺发布自研OLED垂域大模型，构建"顶层大语言模型+业务领域专业模型+产线边缘小模型"三级融合AI架构</div><div class="card-meta"><span>企鹅号</span><span>2026-04-30</span></div></div>
+</div>
+
+<div class="grid" id="news-policy" style="display:none">
+<div class="card"><span class="card-tag policy">监管政策</span><div class="card-title"><a href="https://www.iyiou.com/data/202605011128883" target="_blank">《人工智能拟人化互动服务管理暂行办法》7月15日施行</a></div><div class="card-desc">禁止向未成年人提供虚拟亲属、伴侣等虚拟亲密关系服务，部分AI陪伴软件仍存身份核验宽松、诱导消费等问题</div><div class="card-meta"><span>钛媒体</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag policy">监管政策</span><div class="card-title"><a href="http://finance.sina.com.cn/jjxw/2026-05-01/doc-inhwispq5833271.shtml" target="_blank">数字中国峰会：AI推理数据量首超训练，进入规模化应用新阶段</a></div><div class="card-desc">全国AI推理数据量达101.34EB首超训练数据量，日均词元调用超140万亿，AI从"埋头苦学"迈向"大显身手"</div><div class="card-meta"><span>新浪财经</span><span>2026-05-01</span></div></div>
+</div>
+</div>
+
+<!-- ==================== TOOLS ==================== -->
+<div class="panel" id="panel-tools">
+<div class="sec-title"><span class="icon">🔧</span> AI工具导航</div>
+<div class="sub-tabs">
+<button class="sub-btn active" data-sub="tool-music">🎵 音乐</button>
+<button class="sub-btn" data-sub="tool-video">🎬 视频</button>
+<button class="sub-btn" data-sub="tool-image">🖼️ 图片</button>
+<button class="sub-btn" data-sub="tool-chat">💬 对话</button>
+<button class="sub-btn" data-sub="tool-code">💻 代码</button>
+</div>
+<div class="tool-grid" id="tool-music">
+<div class="tool-card" onclick="window.open('https://suno.com')"><div class="tool-icon">🎵</div><div class="tool-name">Suno</div><div class="tool-desc">AI音乐</div></div>
+<div class="tool-card" onclick="window.open('https://www.udio.com')"><div class="tool-icon">🎶</div><div class="tool-name">Udio</div><div class="tool-desc">高品质音乐</div></div>
+<div class="tool-card" onclick="window.open('https://www.stableaudio.com')"><div class="tool-icon">🎧</div><div class="tool-name">Stable Audio</div><div class="tool-desc">专业音频</div></div>
+<div class="tool-card" onclick="window.open('https://tongyi.aliyun.com/music')"><div class="tool-icon">🔮</div><div class="tool-name">通义音乐</div><div class="tool-desc">阿里作曲</div></div>
+</div>
+<div class="tool-grid" id="tool-video" style="display:none">
+<div class="tool-card" onclick="window.open('https://sora.com')"><div class="tool-icon">🎬</div><div class="tool-name">Sora</div><div class="tool-desc">OpenAI视频</div></div>
+<div class="tool-card" onclick="window.open('https://kling.kuaishou.com')"><div class="tool-icon">🎯</div><div class="tool-name">可灵</div><div class="tool-desc">快手视频</div></div>
+<div class="tool-card" onclick="window.open('https://runway.ml')"><div class="tool-icon">🎥</div><div class="tool-name">Runway</div><div class="tool-desc">电影级视频</div></div>
+<div class="tool-card" onclick="window.open('https://pika.art')"><div class="tool-icon">⚡</div><div class="tool-name">Pika</div><div class="tool-desc">特效视频</div></div>
+<div class="tool-card" onclick="window.open('https://hailuoai.video')"><div class="tool-icon">🐿️</div><div class="tool-name">海螺AI</div><div class="tool-desc">MiniMax视频</div></div>
+<div class="tool-card" onclick="window.open('https://vidu.studio')"><div class="tool-icon">🎞️</div><div class="tool-name">Vidu</div><div class="tool-desc">生数视频</div></div>
+</div>
+<div class="tool-grid" id="tool-image" style="display:none">
+<div class="tool-card" onclick="window.open('https://midjourney.com')"><div class="tool-icon">🎨</div><div class="tool-name">Midjourney</div><div class="tool-desc">AI绘画标杆</div></div>
+<div class="tool-card" onclick="window.open('https://stability.ai')"><div class="tool-icon">🖼️</div><div class="tool-name">SD 4.0</div><div class="tool-desc">开源生图</div></div>
+<div class="tool-card" onclick="window.open('https://dall-e')"><div class="tool-icon">✨</div><div class="tool-name">DALL·E</div><div class="tool-desc">OpenAI生图</div></div>
+<div class="tool-card" onclick="window.open('https://www.liblib.art')"><div class="tool-icon">🏛️</div><div class="tool-name">LibLib</div><div class="tool-desc">模型社区</div></div>
+<div class="tool-card" onclick="window.open('https://civitai.com')"><div class="tool-icon">🌍</div><div class="tool-name">CivitAI</div><div class="tool-desc">SD模型库</div></div>
+<div class="tool-card" onclick="window.open('https://www.seaart.ai')"><div class="tool-icon">🌊</div><div class="tool-name">SeaArt</div><div class="tool-desc">创作平台</div></div>
+</div>
+<div class="tool-grid" id="tool-chat" style="display:none">
+<div class="tool-card" onclick="window.open('https://chat.openai.com')"><div class="tool-icon">🤖</div><div class="tool-name">ChatGPT</div><div class="tool-desc">OpenAI</div></div>
+<div class="tool-card" onclick="window.open('https://claude.ai')"><div class="tool-icon">🧠</div><div class="tool-name">Claude</div><div class="tool-desc">Anthropic</div></div>
+<div class="tool-card" onclick="window.open('https://chat.deepseek.com')"><div class="tool-icon">🔍</div><div class="tool-name">DeepSeek</div><div class="tool-desc">深度求索</div></div>
+<div class="tool-card" onclick="window.open('https://kimi.moonshot.cn')"><div class="tool-icon">🌙</div><div class="tool-name">Kimi</div><div class="tool-desc">长文本</div></div>
+<div class="tool-card" onclick="window.open('https://tongyi.aliyun.com')"><div class="tool-icon">🔮</div><div class="tool-name">通义千问</div><div class="tool-desc">阿里</div></div>
+<div class="tool-card" onclick="window.open('https://chat.zhipu.ai')"><div class="tool-icon">⚡</div><div class="tool-name">智谱清言</div><div class="tool-desc">智谱AI</div></div>
+</div>
+<div class="tool-grid" id="tool-code" style="display:none">
+<div class="tool-card" onclick="window.open('https://github.com/features/copilot')"><div class="tool-icon">🐙</div><div class="tool-name">Copilot</div><div class="tool-desc">AI代码助手</div></div>
+<div class="tool-card" onclick="window.open('https://cursor.sh')"><div class="tool-icon">📐</div><div class="tool-name">Cursor</div><div class="tool-desc">AI编辑器</div></div>
+<div class="tool-card" onclick="window.open('https://codeium.com')"><div class="tool-icon">🔧</div><div class="tool-name">Codeium</div><div class="tool-desc">免费助手</div></div>
+<div class="tool-card" onclick="window.open('https://www.perplexity.ai')"><div class="tool-icon">🔎</div><div class="tool-name">Perplexity</div><div class="tool-desc">AI搜索</div></div>
+</div>
+</div>
+
+<!-- ==================== OPENSOURCE ==================== -->
+<div class="panel" id="panel-opensource">
+<div class="sec-title"><span class="icon">⭐</span> 开源项目热榜</div>
+<div class="grid">
+<div class="card"><span class="card-tag opensource">🔥 热门</span><div class="card-title"><a href="https://github.com/nousresearch/hermes-agent" target="_blank">Hermes Agent — 自进化AI助手</a></div><div class="card-desc">6.4万⭐ 自进化学习闭环的AI助手，随你成长越用越聪明</div><div class="card-meta"><span>NousResearch</span><span>64k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">🔥 热门</span><div class="card-title"><a href="https://github.com/openclaw/openclaw" target="_blank">OpenClaw — 私人AI助手</a></div><div class="card-desc">10万+⭐ GitHub史上增长最快项目，多平台AI助手</div><div class="card-meta"><span>openclaw</span><span>100k+ ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">📈 增长</span><div class="card-title"><a href="https://github.com/alibaba/zvec" target="_blank">zvec — 阿里轻量级向量数据库</a></div><div class="card-desc">4895⭐ C++进程内闪电检索，日增502⭐</div><div class="card-meta"><span>Alibaba</span><span>4.9k ⭐</span></div></div>
+<div class="card"><span class="card-tag opensource">📱 移动端</span><div class="card-title"><a href="https://github.com/google-ai-edge/gallery" target="_blank">AI Edge Gallery — 手机跑大模型</a></div><div class="card-desc">1.8万⭐ Google开源，无需网络手机运行Gemma</div><div class="card-meta"><span>Google</span><span>18k ⭐</span></div></div>
+</div>
+</div>
+
+<!-- ==================== MARKET ==================== -->
+<div class="panel" id="panel-market">
+<div class="sec-title"><span class="icon">📊</span> 市场数据</div>
+<div class="data-grid">
+<div class="data-card"><div class="data-label">2025全球AI投资</div><div class="data-value">$5817亿</div><div class="data-change up">↑ 130% YoY</div></div>
+<div class="data-card"><div class="data-label">AI音乐市场规模</div><div class="data-value">$42亿</div><div class="data-change up">↑ 新兴赛道</div></div>
+<div class="data-card"><div class="data-label">AI视频生成市场</div><div class="data-value">$86亿</div><div class="data-change up">↑ 爆发增长</div></div>
+<div class="data-card"><div class="data-label">AI绘画用户</div><div class="data-value">1.2亿</div><div class="data-change up">↑ 月活增长</div></div>
+<div class="data-card"><div class="data-label">Sora API定价</div><div class="data-value">$0.03/s</div><div class="data-change down">↓ 持续降价</div></div>
+<div class="data-card"><div class="data-label">Anthropic年化收入</div><div class="data-value">$300亿</div><div class="data-change up">↑ 19x 增长</div></div>
+</div>
+<div class="grid">
+<div class="card"><span class="card-tag market">市场</span><div class="card-title">腾讯混元登顶全球API调用榜，国产大模型出海加速</div><div class="card-desc">腾讯混元Hy3 preview在OpenRouter全球API调用量排名第一，工具调用与编程能力均位居前列</div><div class="card-meta"><span>综合</span><span>2026-05-01</span></div></div>
+<div class="card"><span class="card-tag market">市场</span><div class="card-title">AI推理数据量首超训练，日均词元调用超140万亿</div><div class="card-desc">全国AI推理数据量达101.34EB首超训练，AI告别拼参数时代，全面进入场景为王、规模化落地新阶段</div><div class="card-meta"><span>综合</span><span>2026-05-01</span></div></div>
+</div>
+</div>
+
+</div><!-- end main -->
+
+<!-- Pixel Cat -->
+<div class="cat-wrap" id="catBtn" title="点击留言">
+<svg class="cat-body" viewBox="0 0 40 40" width="40" height="40">
+<rect x="8" y="14" width="24" height="18" rx="4" fill="#a855f7"/>
+<polygon points="8,14 12,4 18,14" fill="#a855f7"/>
+<polygon points="22,14 28,4 32,14" fill="#a855f7"/>
+<polygon points="12,6 14,14 10,14" fill="#c084fc"/>
+<polygon points="26,6 28,14 24,14" fill="#c084fc"/>
+<circle cx="15" cy="21" r="2.5" fill="#fff"/>
+<circle cx="25" cy="21" r="2.5" fill="#fff"/>
+<circle cx="15" cy="21" r="1.2" fill="#1e1b4b"/>
+<circle cx="25" cy="21" r="1.2" fill="#1e1b4b"/>
+<ellipse cx="20" cy="26" rx="2" ry="1.5" fill="#e9d5ff"/>
+</svg>
+</div>
+<div class="cat-dialog" id="catDialog">
+<h4>🐱 给我留言</h4>
+<input type="text" id="catName" placeholder="你的名字">
+<textarea id="catMsg" placeholder="说点什么..."></textarea>
+<button onclick="sendCatMsg()">发送</button>
+<p style="font-size:11px;color:var(--muted);margin-top:8px">留言将发送至 121803909@qq.com</p>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+KATANAAI LAB © 2026 · AI · CREATE · FUTURE · <a href="https://github.com/121803909/ai-hub" target="_blank">GitHub</a>
+</div>
+
+<script>
+// Date
+document.getElementById('dateDisplay').textContent=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+
+// Nav tabs
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Sub tabs
+document.querySelectorAll('.sub-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const parent=btn.parentElement;
+    parent.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const sub=btn.dataset.sub;
+    let el=parent.nextElementSibling;
+    while(el&&!el.classList.contains('sub-tabs')&&el.tagName!=='H2'){
+      if(el.classList.contains('grid')||el.classList.contains('tool-grid')){
+        el.style.display='none';
+      }
+      el=el.nextElementSibling;
+    }
+    const target=document.getElementById(sub);
+    if(target)target.style.display='';
+  });
+});
+
+// Cat dialog
+document.getElementById('catBtn').addEventListener('click',()=>{
+  document.getElementById('catDialog').classList.toggle('show');
+});
+function sendCatMsg(){
+  const name=document.getElementById('catName').value||'匿名';
+  const msg=document.getElementById('catMsg').value;
+  if(!msg){alert('请输入留言内容');return;}
+  const subject=encodeURIComponent('KATANAAI LAB 留言 - '+name);
+  const body=encodeURIComponent('来自: '+name+'\n\n'+msg);
+  window.open('mailto:121803909@qq.com?subject='+subject+'&body='+body);
+  document.getElementById('catDialog').classList.remove('show');
+  document.getElementById('catMsg').value='';
+}
+</script>
+</body>
+</html>
