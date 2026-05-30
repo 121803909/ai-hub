@@ -5,185 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI前沿资讯 - 每日精选</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #e4e4e4;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-        .date {
-            color: #888;
-            font-size: 1rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,0.12);
-            box-shadow: 0 10px 40px rgba(0,212,255,0.2);
-        }
-        .card-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        .card-tag.model {
-            background: linear-gradient(90deg, #7b2ff7, #f72fff);
-            color: white;
-        }
-        .card-tag.industry {
-            background: linear-gradient(90deg, #00d4ff, #0099cc);
-            color: white;
-        }
-        .card-tag.tech {
-            background: linear-gradient(90deg, #ff6b6b, #ffc107);
-            color: white;
-        }
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        .card-title a {
-            color: #fff;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .card-title a:hover {
-            color: #00d4ff;
-        }
-        .card-desc {
-            color: #bbb;
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-        }
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #666;
-            font-size: 0.8rem;
-        }
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            h1 {
-                font-size: 1.8rem;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #e4e4e4; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.05); border-radius: 20px; margin-bottom: 30px; backdrop-filter: blur(10px); }
+        h1 { font-size: 2.5rem; background: linear-gradient(90deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+        .date { color: #888; font-size: 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .card { background: rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
+        .card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); box-shadow: 0 10px 40px rgba(0,212,255,0.2); }
+        .card-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 12px; }
+        .card-tag.model { background: linear-gradient(90deg, #7b2ff7, #f72fff); color: white; }
+        .card-tag.industry { background: linear-gradient(90deg, #00d4ff, #0099cc); color: white; }
+        .card-tag.tech { background: linear-gradient(90deg, #ff6b6b, #ffc107); color: white; }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        .card-title a { color: #fff; text-decoration: none; transition: color 0.3s; }
+        .card-title a:hover { color: #00d4ff; }
+        .card-desc { color: #bbb; font-size: 0.9rem; margin-bottom: 12px; }
+        .card-meta { display: flex; justify-content: space-between; color: #666; font-size: 0.8rem; }
+        footer { text-align: center; padding: 30px; color: #666; font-size: 0.9rem; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 1.8rem; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🤖 AI前沿资讯</h1>
-            <p class="date">📅 2026年5月21日 · 每日自动更新</p>
+            <p class="date">📅 2026年5月30日 · 每日自动更新</p>
         </header>
-        
         <div class="grid">
             <div class="card">
-                <span class="card-tag tech">技术</span>
-                <div class="card-title"><a href="https://blog.csdn.net/weixin_44851537/article/details/161272423" target="_blank">Google I/O 2026全面复盘：智能体Gemini时代正式到来</a></div>
-                <div class="card-desc">I/O首日发布密度空前，Pichai宣告"智能体Gemini时代"正式到来。震撼数据：谷歌月处理Token达3200万亿（同比增长7倍），Gemini月活突破9亿。Antigravity 2.0可在12小时内自主编写操作系统，开发者超850万/月使用谷歌AI模型构建应用。</div>
-                <div class="card-meta"><span>CSDN博客</span><span>2026-05-21</span></div>
+                <span class="card-tag model">大模型</span>
+                <div class="card-title"><a href="https://blog.csdn.net/qq_36729037/article/details/161051783" target="_blank">Anthropic冲刺300亿美元融资，估值飙至9000亿美元</a></div>
+                <div class="card-desc">Anthropic目标融资300亿美元，投前估值高达9000亿美元，谈判进展迅速，预计最快本月底完成。成立于2020年，由OpenAI前员工创办，致力于安全AI技术。</div>
+                <div class="card-meta"><span>CSDN博客</span><span>2026-05-28</span></div>
             </div>
-
-            <div class="card">
-                <span class="card-tag industry">产业</span>
-                <div class="card-title"><a href="https://www.toutiao.com/article/7642327072186958399/" target="_blank">OpenAI据悉最快本周五秘密递交IPO申请</a></div>
-                <div class="card-desc">据多方消息，OpenAI最快将于本周五秘密向SEC递交IPO申请。Anthropic同时拟在IPO前完成AI史上最高融资，规模冲击9000亿美元。AI行业上市潮即将来临，资本化进程加速。</div>
-                <div class="card-meta"><span>今日头条</span><span>2026-05-21</span></div>
-            </div>
-
             <div class="card">
                 <span class="card-tag tech">技术</span>
-                <div class="card-title"><a href="https://www.toutiao.com/article/7642327072186958399/" target="_blank">腾讯上线AI助手Marvis，混元翻译模型Hy-MT2正式开源</a></div>
-                <div class="card-desc">腾讯上线操作系统层级AI助手Marvis（马维斯），集成系统级AI能力。同期腾讯混元翻译模型Hy-MT2正式开源，火山引擎一站式AIGC短剧创作平台火山剧创1.0正式上线，进一步丰富AI应用生态。</div>
-                <div class="card-meta"><span>今日头条</span><span>2026-05-21</span></div>
+                <div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c00190657b2.html" target="_blank">中科曙光董事长：科学智能时代已至，超智融合重构AI计算</a></div>
+                <div class="card-desc">在2026世界智能产业博览会上，中科曙光董事长历军表示AI for Science正推动人类加速迈入"科学智能时代"。传统数学模型驱动的高精度科学计算将与数据模型驱动的低精度智能计算深度耦合。</div>
+                <div class="card-meta"><span>新浪网</span><span>2026-05-30</span></div>
             </div>
-
             <div class="card">
-                <span class="card-tag industry">产业</span>
-                <div class="card-title"><a href="https://www.sohu.com/a/1025780407_120988576" target="_blank">微软联手安永投入超10亿美元助推企业AI转型</a></div>
-                <div class="card-desc">微软宣布与安永合作，投入超过10亿美元助推企业AI转型。安永专家团队与微软"前沿部署工程师"将协同合作，帮助客户在金融、工业、医疗等领域规模化部署AI解决方案。AI商业化落地进入加速期。</div>
-                <div class="card-meta"><span>搜狐</span><span>2026-05-21</span></div>
+                <span class="card-tag industry">🏭 产业</span>
+                <div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c00190648ws.html" target="_blank">2026数字经济大会成功举办，AI重构增长新范式</a></div>
+                <div class="card-desc">5月29日，2026数字经济大会在北京举行。大会以"智变：人工智能重构增长新范式"为主题，汇聚产业界领军人物、顶尖技术专家与资深资本方代表，深入探讨创新与产业融合的核心机遇。</div>
+                <div class="card-meta"><span>新浪网</span><span>2026-05-30</span></div>
             </div>
-
-            <div class="card">
-                <span class="card-tag tech">技术</span>
-                <div class="card-title"><a href="https://www.toutiao.com/article/7642327072186958399/" target="_blank">全国首个面向家庭场景的通用机器人在武汉发布</a></div>
-                <div class="card-desc">全国首个面向家庭场景的通用机器人在武汉正式发布，标志着人形机器人从工业场景向家庭场景迈出重要一步。同期具身智能创业持续活跃，智元WITA成为全国首例完成大模型备案的具身智能交互模型。</div>
-                <div class="card-meta"><span>今日头条</span><span>2026-05-21</span></div>
-            </div>
-
-            <div class="card">
-                <span class="card-tag industry">产业</span>
-                <div class="card-title"><a href="https://www.fromgeek.com/AI_1.html" target="_blank">中国AI云市场大爆发：阿里云增至38.1%，AI IaaS和MaaS均第一</a></div>
-                <div class="card-desc">最新数据显示，中国AI云市场持续高速增长，阿里云市场份额增至38.1%，在AI IaaS和MaaS领域均位居第一。2026阿里云峰会上，千问模型更新至Qwen3.6系列，发布千问云智能体化产品。</div>
-                <div class="card-meta"><span>极客网</span><span>2026-05-19</span></div>
-            </div>
-
             <div class="card">
                 <span class="card-tag model">大模型</span>
-                <div class="card-title"><a href="https://k.sina.com.cn/article_7857201856_1d45362c001905qlkm.html" target="_blank">三大运营商Token套餐进入计费时代：像卖流量一样卖词元</a></div>
-                <div class="card-desc">三大运营商争相推出系列试商用Token套餐——9.9元每月1000万Tokens，1元可得40万Tokens。有公司将词元写进考核表，员工"放开用"。Token正式成为继语音、流量之后的第三个核心计量单位，AI计费进入流量包时代。</div>
-                <div class="card-meta"><span>新浪网</span><span>2026-05-21</span></div>
+                <div class="card-title"><a href="https://blog.csdn.net/qq_36729037/article/details/160903469" target="_blank">Anthropic估值破1.2万亿美元，反超OpenAI成为最具价值AI公司</a></div>
+                <div class="card-desc">Anthropic估值达到1.2万亿美元，成为全球最具价值的AI公司。SpaceX计划投资550亿美元建设AI芯片工厂，马斯克大举进军AI芯片制造。</div>
+                <div class="card-meta"><span>CSDN博客</span><span>2026-05-27</span></div>
             </div>
-
             <div class="card">
-                <span class="card-tag industry">产业</span>
-                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_8826a0bb21076252" target="_blank">国产大模型集体爆发：Kimi K2.6主打300个子智能体并行</a></div>
-                <div class="card-desc">国产大模型迎来井喷式更新，Token调用量在OpenRouter排名持续名列前茅。Kimi K2.6一次最多调动300个子智能体，并行完成4000个协作步骤，将复杂任务执行时间缩短3倍以上。腾讯混元大模型排名第一，可一句话生成微信小程序。</div>
-                <div class="card-meta"><span>企鹅号</span><span>2026-05-19</span></div>
+                <span class="card-tag tech">🛠️ 硬件</span>
+                <div class="card-title"><a href="https://www.sohu.com/a/1029058380_115035" target="_blank">壁仞科技壁砺166获国测I级认证，AI芯片首次纳入国家测评体系</a></div>
+                <div class="card-desc">AI训练推理芯片首次被纳入国家测评体系，壁仞科技壁砺166等9款国产芯片获评安全可靠I级。壁仞科技已纳入恒生综合指数，有望成为港股通标的。</div>
+                <div class="card-meta"><span>搜狐</span><span>2026-05-29</span></div>
             </div>
-
+            <div class="card">
+                <span class="card-tag industry">💼 商业</span>
+                <div class="card-title"><a href="https://blog.csdn.net/qq_36729037/article/details/160928564" target="_blank">Cloudflare因AI效率提升裁员1100人，收入却创历史新高</a></div>
+                <div class="card-desc">Cloudflare因AI自动化大幅提升运营效率，在支撑收入新高的同时实现人员精简。蚂蚁百灵发布万亿级思考模型Ring-2.6-1T，支持推理强度自定义。</div>
+                <div class="card-meta"><span>CSDN博客</span><span>2026-05-28</span></div>
+            </div>
             <div class="card">
                 <span class="card-tag tech">技术</span>
-                <div class="card-title"><a href="https://blog.csdn.net/u010690311/article/details
+                <div class="card-title"><a href="https://blog.csdn.net/m0_75253087/article/details/160489099" target="_blank">具身智能迎"数据元年"，特斯拉Optimus V3定档年中亮相</a></div>
+                <div class="card-desc">具身智能行业正经历关键转折，焦点已从硬件展示转移至数据积累与真实场景落地。业内共识认为2026年是具身智能产业数据元年，当前高质量具身数据规模仅50万小时，距离通用智能所需的百亿小时级缺口巨大。</div>
+                <div class="card-meta"><span>CSDN博客</span><span>2026-05-27</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag model">大模型</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_7086a19385d38952" target="_blank">新一轮大模型要来了！Blackwell加持下，AI能力更强了</a></div>
+                <div class="card-desc">AI大模型竞争正迈入新的技术节点。Anthropic本周正式发布Claude Opus 4.8，在智能体协作、可控推理与诚实度方面全面升级。MiniMax预告采用全新稀疏注意力机制的MiniMax-M3即将登场。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-05-29</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag industry">🏭 产业</span>
+                <div class="card-title"><a href="http://finance.eastmoney.com/a/202605283752586378.html" target="_blank">中国石油昆仑大模型迈入主动智能新阶段，六大AI高阶能力发布</a></div>
+                <div class="card-desc">昆仑大模型完成从通用问答向主动智能的关键跨越。具备六大AI高阶能力，全产业链152个应用场景实现规模化落地应用。构建安全自主的全栈国产化人工智能技术底座。</div>
+                <div class="card-meta"><span>东方财富网</span><span>2026-05-28</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag tech">技术</span>
+                <div class="card-title"><a href="https://blog.csdn.net/qq_39427511/article/details/161337119" target="_blank">谷歌升级Gemini应用剑指ChatGPT和Claude，黄仁勋承认华为已替代NVIDIA中国AI芯片市场</a></div>
+                <div class="card-desc">谷歌在I/O 2026大会上宣布对Gemini应用进行重大更新，将该应用定位为"全能AI中心"。NVIDIA CEO黄仁勋首次明确表态，NVIDIA已大致上将中国AI芯片市场拱手让给华为。</div>
+                <div class="card-meta"><span>CSDN博客</span><span>2026-05-25</span></div>
+            </div>
+        </div>
+        <footer>
+            <p>🤖 由 KatanaAI Lab 每日自动更新 | 数据来源：联网实时搜索</p>
+            <p style="margin-top: 10px; color: #555;">最后更新：2026年5月30日 14:11</p>
+        </footer>
+    </div>
+</body>
+</html>
