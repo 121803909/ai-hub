@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI前沿资讯 - 每日精选</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #e4e4e4; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.05); border-radius: 20px; margin-bottom: 30px; backdrop-filter: blur(10px); }
+        h1 { font-size: 2.5rem; background: linear-gradient(90deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+        .date { color: #888; font-size: 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .card { background: rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
+        .card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); box-shadow: 0 10px 40px rgba(0,212,255,0.2); }
+        .card-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 12px; }
+        .card-tag.model { background: linear-gradient(90deg, #7b2ff7, #f72fff); color: white; }
+        .card-tag.industry { background: linear-gradient(90deg, #00d4ff, #0099cc); color: white; }
+        .card-tag.tech { background: linear-gradient(90deg, #ff6b6b, #ffc107); color: white; }
+        .card-tag.hardware { background: linear-gradient(90deg, #00ff88, #00d4ff); color: white; }
+        .card-tag.funding { background: linear-gradient(90deg, #ffd700, #ff6b6b); color: white; }
+        .card-tag.policy { background: linear-gradient(90deg, #ff4757, #ff6b81); color: white; }
+        .card-tag.security { background: linear-gradient(90deg, #ff4500, #ff8c00); color: white; }
+        .card-tag.robot { background: linear-gradient(90deg, #00bfa5, #00d4ff); color: white; }
+        .card-tag.science { background: linear-gradient(90deg, #9c27b0, #e91e63); color: white; }
+        .card-tag.application { background: linear-gradient(90deg, #4caf50, #8bc34a); color: white; }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        .card-title a { color: #fff; text-decoration: none; transition: color 0.3s; }
+        .card-title a:hover { color: #00d4ff; }
+        .card-desc { color: #bbb; font-size: 0.9rem; margin-bottom: 12px; }
+        .card-meta { display: flex; justify-content: space-between; color: #666; font-size: 0.8rem; }
+        footer { text-align: center; padding: 30px; color: #666; font-size: 0.9rem; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI前沿资讯</h1>
+            <p class="date">📅 2026年8月16日 · 每日自动更新</p>
+        </header>
+        <div class="grid">
+            <div class="card">
+                <span class="card-tag model">🤖 模型</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_3646a815a6244452" target="_blank">DeepSeek-V4-Pro正式版上线，Agent能力大幅跃升</a></div>
+                <div class="card-desc">8月12日，DeepSeek-V4-Pro正式版发布，重点强化Agent能力，支持Responses功能。Terminal Bench 2.1得分87.9，距全球第一仅差0.1分；DeepSWE测试从12.8分飙升至62.7分。支持100万Token上下文，输出定价0.87美元/百万Token。同时宣布API峰谷定价，高峰时段最高涨价11倍。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag model">🤖 模型</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_3646a815a6244452" target="_blank">阿里Qwen3.8 Max开源权重正式发布</a></div>
+                <div class="card-desc">阿里巴巴正式开源Qwen3.8-Max旗舰模型权重（Qwen3.8-2.4T-A95B），总参数2.4万亿，采用稀疏MoE架构，单次激活约950亿参数。Artificial Analysis智能指数评分58，编程指数71.8。Qwen3.8-27B开放权重已上线ModelScope。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag industry">🌐 行业</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_4926a81b4b829952" target="_blank">全球开源AI大洗牌，中国开源模型加速崛起</a></div>
+                <div class="card-desc">Hugging Face报告显示，2026年以来中国AI企业发布的最大开源模型在参数规模上显著超越美国同行（7540亿至2.78万亿 vs 低于1300亿）。超八成中国模型采用宽松授权协议，基于Qwen的衍生模型数量已超15万个，远超谷歌和Meta。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag funding">💰 资本</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_1156a810eaf23352" target="_blank">Anthropic单季营收115亿美元，暴增14倍</a></div>
+                <div class="card-desc">Anthropic二季度初步营收超115亿美元，是去年同期至少14倍。从2025年Q2的7.87亿→2026年Q1的47.3亿→Q2的115亿，环比近乎翻倍。调整后经营利润首次转正。</div>
+                <div class="card-meta"><span>Fortune</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag model">🤖 模型</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_9876a81674264865" target="_blank">字节跳动计划研发最高10万亿参数大模型</a></div>
+                <div class="card-desc">字节跳动正在预训练参数规模最高可达10万亿的超大模型，体量是Kimi K3的三倍以上，完整训练周期预计3-6个月。该项目由Seed Foundation负责人项亮主导，能否正式发布仍是未知数。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag model">🤖 模型</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_4856a812d6c57752" target="_blank">苹果联手阿里打造中国专属AI大模型</a></div>
+                <div class="card-desc">苹果已专门针对中国市场训练出一款大语言模型，并与阿里巴巴集团合作完成开发。标志着苹果在中国从"依赖第三方模型"转向"自研+本地合作"的双轨策略，更贴近监管与用户需求。</div>
+                <div class="card-meta"><span>路透社</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag policy">📜 政策</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_9716a818cb422052" target="_blank">国内首部L3/L4自动驾驶强制性国标发布</a></div>
+                <div class="card-desc">工信部发布《智能网联汽车自动驾驶系统安全要求》强制性国家标准（GB 44721-2026），将于2027年7月1日起实施。覆盖载客、载货车辆，不适用于自动泊车系统。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag policy">📜 政策</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_3696a8167d455152" target="_blank">美国拟致信35国要求在AI领域"选边站"</a></div>
+                <div class="card-desc">美国国务院计划致信35个相关国家，在人工智能领域划定合作边界。草案称"试图加入所有阵营，等于一无所有"，威胁参与中国主导AI框架的国家将被排除在美国主导的"AI联盟"之外。</div>
+                <div class="card-meta"><span>路透社</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag science">🔬 科研</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_2046a80de6892552" target="_blank">斯坦福科学家用AI设计出16种全新病毒</a></div>
+                <div class="card-desc">斯坦福大学与Arc Institute团队利用基因组语言模型Evo，从头设计出完整病毒基因组，在实验室获得16种能够复制、感染细菌的全新病毒。论文发表于《科学》(Science)，被认为是AI从设计蛋白质迈向设计完整生命系统的重要进展。</div>
+                <div class="card-meta"><span>Science</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag application">📱 应用</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_0676a81c3d214552" target="_blank">2026上海书展AI短片黑客松成果发布</a></div>
+                <div class="card-desc">8月15日晚，2026上海书展AI短片黑客松成果发布活动举行。6支青年学生团队经过24小时限时创作，创作的AI短片集中亮相，通过作品展映和专业点评呈现创作成果。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag science">🔬 科研</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_1886a8185ed70552" target="_blank">我国科学家发布大豆垂直大模型"丰菽"2.0</a></div>
+                <div class="card-desc">安徽农业大学发布大豆领域垂直大模型"丰菽"2.0，实现多模态数据融合，新增多模型协同分析机制。可辅助开展病害诊断、育种亲本筛选、虚拟组合设计、表型数据解析等，推动AI辅助育种。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+            <div class="card">
+                <span class="card-tag funding">💰 资本</span>
+                <div class="card-title"><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_6266a81460694852" target="_blank">前阿里千问大模型技术负责人林俊旸创业</a></div>
+                <div class="card-desc">前阿里千问大模型技术负责人林俊旸在上海创办Pragmatik Labs（语用科技），研究方向为横跨数字世界和物理世界的下一代智能体（Agent）。高榕创投和红杉中国共同领投，腾讯和上海未来产业基金提供支持。</div>
+                <div class="card-meta"><span>企鹅号</span><span>2026-08-16</span></div>
+            </div>
+        </div>
+        <footer>
+            <p>🤖 由 KatanaAI Lab 每日自动更新 | 数据来源：联网实时搜索</p>
+            <p style="margin-top: 10px; color: #555;">最后更新：2026年8月16日 23:00</p>
+        </footer>
+    </div>
+</body>
+</html>
